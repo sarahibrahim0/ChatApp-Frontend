@@ -1,88 +1,89 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { Field, Form, Formik , ErrorMessage } from "formik";
-import * as Yup from 'yup';
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Field, Form, Formik, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import { setNewPassword } from "../redux/apiCalls/passwordApiCalls";
-import { authActions } from "../redux/slices/authSlice";
+import { authActions } from "../redux/slices/AUTHsLICE";
 
 const ResetPassword = () => {
   const dispatch = useDispatch();
-  const { error } = useSelector((state) => state.password);
+  const { errorPassword } = useSelector((state) => state.password);
   const { userId, token } = useParams();
-
   const navigate = useNavigate();
 
-
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(authActions.register(null));
-  },[]);
+  }, []);
 
-  
-
-
-  // From Submit Handler
   const formSubmitHandler = (values) => {
-    dispatch(setNewPassword( values['password'], userId, token ));
-    navigate('/password-reseted');
+    dispatch(setNewPassword(values.password, userId, token));
+    navigate("/password-reseted");
   };
 
-
-
-  // From Submit Handler
-  // const formSubmitHandler = (values) => {
-  //   return dispatch(forgotPassword(values['email']));
-  // };
-
   const initialValues = {
-    password: ""
-  }
+    password: "",
+  };
 
   const schema = Yup.object().shape({
-    password: Yup.string().required('Password is required').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!+@#\\$%\\^&\\*])(?=.{8,})/, 'Must contain 8 characters, one uppercase, one lowercase, one number and one special character'),
+    password: Yup.string()
+      .required("Password is required")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!+@#\$%\^&\*])(?=.{8,})/,
+        "Must contain 8 characters, one uppercase, one lowercase, one number and one special character"
+      ),
   });
 
   return (
+    <div className="flex justify-center items-center min-h-screen bg-white-smoke px-4">
+      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center">
+        <h2 className="text-xl font-bold text-royal-purple mb-4">Reset Password</h2>
+        <p className="text-gray-600 mb-6">Enter a new strong password</p>
 
+        <Formik
+          onSubmit={formSubmitHandler}
+          initialValues={initialValues}
+          validationSchema={schema}
+        >
+          {(formik) => (
+            <Form className="space-y-4">
+              <div className="text-left">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Password
+                </label>
+                <Field
+                  name="password"
+                  type="password"
+                  id="password"
+                  placeholder="Enter your new password"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-royal-purple"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
 
-    <section className="w-full min-h-screen flex flex-col items-center justify-start  p-10 ">
+              <button
+                disabled={formik.isSubmitting}
+                type="submit"
+                className="w-full bg-royal-purple text-white py-2 rounded-lg hover:bg-russian-violet transition duration-200"
+              >
+                Update Password
+              </button>
+            </Form>
+          )}
+        </Formik>
 
-    <div className="formShadow min-w-[60vh] min-h-[50vh] flex flex-col justify-center items-center rounded-2xl mt-10 lg:w-auto sm:w-full   h-full py-8 px-5">
-    {/* <span className=" font-semibold md:text-2xl sm:text-base text-blue-black mb-5 mt-1 pt-5">Forgot Password? </span> */}
-<Formik onSubmit={formSubmitHandler} initialValues={initialValues} validationSchema={schema}>
-  {(formik)=>{
-    return (
-<Form  className=" w-full flex flex-col justify-center items-center  text-center ">
-        <div className="w-full flex flex-row justify-between items-center space-x-2 p-5">
-        <label htmlFor="email" className="  text-sm font-[500]  text-blue-black ">
-          Password
-        </label>
-        <Field
-        name="password"
-          type="password"
-          id="password"
-          placeholder="Enter new password"
-          className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
-          />
+        {errorPassword && (
+          <p className="text-red-600 font-medium mt-4">Error: {errorPassword}</p>
+        )}
       </div>
-
-
-     <ErrorMessage name="password" component="div" className="  text-red-500 text-xs italic"/>
-
-
-      <button disabled={formik.isSubmitting}  type='submit' className="relative z-10 !bg-gradient-to-r from-sky-500 to-indigo-500 my-5 text-white min-h-[41.6px] box-border  hover:!bg-custom-color  transition-all duration-500 ease-in-out  border-[1px] rounded-full py-2 px-7 mr-2" >
-    <span className="text-inherit text-sm inline-block mr-1  ">
-       Update Password
-    </span>
-    </button>
-    </Form>
-    )
-  }}
-</Formik>
-</div>
-    </section>
-
+    </div>
   );
 };
 

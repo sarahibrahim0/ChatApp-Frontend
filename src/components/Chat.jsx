@@ -7,9 +7,9 @@ import { formatTimeAgo } from "../utils/timeFormatter";
 const Chat = ({chat}) => {
 
     const navigate = useNavigate();
-    const chatS = useSelector(state => 
-  state.chat.chats.find(c => c._id === chat._id)
-);
+//     const chatS = useSelector(state => 
+//   state.chat.chats.find(c => c._id === chat._id)
+// );
     const {user} = useSelector(state=>state.auth);
     // const {lastMsg} = useSelector(state=>state.chat);
 
@@ -54,12 +54,13 @@ navigate(`/${receiverId}`);
   {/* الاسم والرسالة */}
   <div className="flex flex-col justify-between  overflow-hidden">
     <span className="text-xs font-semibold text-gray-900 truncate">{receiver.name}</span>
-    <span className="text-xxs text-english-violet truncate">{chatS.lastMsg?.text}</span>
+    <span className="text-xxs text-english-violet truncate">{chat.lastMsg ? chat.lastMsg.text : "لا توجد رسائل بعد"}
+</span>
   </div>
 
   {/* الوقت */}
   <div className="text-xxs text-english-violet text-right self-end">
-    {formatTimeAgo(chatS?.lastMsg?.createdAt)}
+    {formatTimeAgo(chat?.lastMsg?.createdAt)}
   </div>
 </div>
 

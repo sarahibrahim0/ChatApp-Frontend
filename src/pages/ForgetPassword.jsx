@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -7,19 +7,15 @@ import { useNavigate } from "react-router-dom";
 
 const ForgetPassword = () => {
   const dispatch = useDispatch();
-  const { registerMessage } = useSelector((state) => state.auth);
-  const { error } = useSelector((state) => state.password);
-
+  const { resetedMsg } = useSelector((state) => state.password);
+  const { errorPassword } = useSelector((state) => state.password);
   const navigate = useNavigate();
 
-  const formSubmitHandler = (values) => {
-    dispatch(forgotPassword(values["email"]));
-  };
   useEffect(() => {
-    if (registerMessage) {
+    if (resetedMsg) {
       navigate("/email-sent");
     }
-  }, [registerMessage]);
+  }, [resetedMsg]);
 
   const initialValues = {
     email: "",
@@ -36,53 +32,52 @@ const ForgetPassword = () => {
   });
 
   return (
-    <section className="w-full min-h-screen flex flex-col items-center justify-start  p-10 ">
-      <div className="formShadow min-w-[60vh] min-h-[50vh] flex flex-col justify-center items-center rounded-2xl mt-10 lg:w-auto sm:w-full   h-full py-8 px-5">
-        {/* <span className=" font-semibold md:text-2xl sm:text-base text-blue-black mb-5 mt-1 pt-5">Forgot Password? </span> */}
+    <div className="flex justify-center items-center min-h-screen  bg-white-smoke px-4">
+      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center">
+        <h2 className="text-xl font-bold text-royal-purple mb-4">Forgot Password?</h2>
+        <p className="text-gray-600 mb-6">Enter your email to reset your password</p>
+
         <Formik
-          onSubmit={formSubmitHandler}
+          onSubmit={(values) => dispatch(forgotPassword(values.email))}
           initialValues={initialValues}
           validationSchema={schema}
         >
-          {(formik) => {
-            return (
-              <Form className=" w-full flex flex-col justify-center items-center text-center p-3">
-                <div className="w-full flex flex-row justify-between items-center space-x-2 p-5">
-                  <label
-                    htmlFor="email"
-                    className="  text-sm font-[500]  text-blue-black "
-                  >
-                    Email
-                  </label>
-                  <Field
-                    name="email"
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
-                  />
-                </div>
-
+          {(formik) => (
+            <Form className="space-y-4">
+              <div className="text-left">
+                <label htmlFor="email" className="block text-sm font-medium text-russian-violet mb-1">
+                  Email
+                </label>
+                <Field
+                  name="email"
+                  type="email"
+                  id="email"
+                  placeholder="Enter your email"
+                  className="w-full rounded-lg border border-[#D1B3E0] px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#A55EEA] focus:border-[#A55EEA] transition duration-200"
+                />
                 <ErrorMessage
                   name="email"
                   component="div"
-                  className="relative z-10  text-red-500 text-xs italic"
+                  className="text-red-500 text-sm mt-1"
                 />
+              </div>
 
-                <button
-                  disabled={formik.isSubmitting}
-                  type="submit"
-                  className="relative z-10 !bg-gradient-to-r from-sky-500 to-indigo-500 my-5 text-white min-h-[41.6px] box-border  hover:!bg-custom-color  transition-all duration-500 ease-in-out  border-[1px] rounded-full py-2 px-7 mr-2"
-                >
-                    Reset Password
-                </button>
-              </Form>
-            );
-          }}
+              <button
+                disabled={formik.isSubmitting}
+                type="submit"
+                className="w-full bg-royal-purple text-white py-2 rounded-full hover:bg-russian-violet transition duration-300"
+              >
+                Reset Password
+              </button>
+            </Form>
+          )}
         </Formik>
-        {error && <p>{error}</p>}
+
+        {errorPassword && (
+          <p className="text-red-600 font-medium text-sm mt-4">Error: {errorPassword}</p>
+        )}
       </div>
-    </section>
+    </div>
   );
 };
 

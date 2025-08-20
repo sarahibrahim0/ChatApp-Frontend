@@ -24,7 +24,7 @@ const chatSlice = createSlice({
             state.chats = action.payload;
           },
         sendMessage (state, action){
-          state.currentChatMessages.push(action.payload)
+          state.currentChatMessages.push(action.payload);
           
         },
 
@@ -43,6 +43,17 @@ const chatSlice = createSlice({
     state.currentChatMessages.push(action.payload);
   }
 },
+addOrUpdateChat: (state, action) => {
+  const chatIndex = state.chats.findIndex(chat => chat._id === action.payload._id);
+
+  if (chatIndex !== -1) {
+    // لو موجود، نحدثه
+    state.chats[chatIndex] = action.payload;
+  } else {
+    // لو مش موجود، نضيفه فوق
+    state.chats.unshift(action.payload);
+  }
+},
 updateLastMsgInChatList: (state, action) => {
   const chat = state.chats.find(c => c._id === action.payload.chatId);
   if (chat) {
@@ -52,7 +63,6 @@ updateLastMsgInChatList: (state, action) => {
     };
   }
 }
-
        ,
       setSelectedUser(state,action){
    state.selectedUser = action.payload;

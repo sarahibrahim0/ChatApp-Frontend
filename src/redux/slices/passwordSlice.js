@@ -4,9 +4,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const passwordSlice = createSlice({
     name: 'password',
     initialState: {
-
+       
         errorPassword: null,
-        reseted : null
+        reseted : null,
+        resetedMsg : null
     },
     reducers: {
         setError(state, action) {
@@ -14,6 +15,12 @@ const passwordSlice = createSlice({
           },
           clearError(state) {
             state.errorPassword = null;
+          },
+          setResetedMsg(state, action) {
+            state.resetedMsg = action.payload;
+          },
+          clearResetedMsg(state) {
+            state.resetedMsg = null;
           },
           clearReseted(state) {
             state.reseted = null;

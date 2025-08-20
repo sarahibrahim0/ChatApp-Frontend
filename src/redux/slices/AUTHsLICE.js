@@ -9,11 +9,21 @@ const AUTHsLICE = createSlice({
         isEmailVerified: false,
         isVerifying: false,
         error: null,
+  token: localStorage.getItem("token") 
+        ? localStorage.getItem("token") 
+        : null,
+                userId: null,
+        isActive: localStorage.getItem('isActive')? JSON.parse(localStorage.getItem('isActive')) : null
+,loading: false
     },
     reducers: {
     login(state, action){
         state.user = action.payload;
+        state.token = action.payload.token;
+        state.isActive = action.payload.isActive;
         state.registerMessage = null;
+        state.token = action.payload.token;
+
     },
     setToken(state, action){
         state.token = action.payload;
@@ -21,16 +31,10 @@ const AUTHsLICE = createSlice({
     logout(state){
         state.user = null;
         state.token = null;
-        state.error = null;
+        localStorage.removeItem('userInfo');
     },
     register(state, action){
     state.registerMessage = action.payload;
-    },
-    setUserPhoto(state, action){
-        state.user.profilePhoto = action.payload;
-    },
-    setUserName(state, action){
-        state.user.username = action.payload;
     },
     setIseEmailVerified(state){
         state.isEmailVerified=true;
@@ -49,7 +53,29 @@ const AUTHsLICE = createSlice({
     },
     clearError(state){
         state.error = null;
-    }
+    },
+        setLoading(state){
+        state.loading = true;
+    },
+    clearLoading(state){
+        state.loading = false;
+    },
+           setUserId(state , action){
+        state.userId = action.payload;
+    },
+    clearUserId(state){
+        state.userId = null;
+    },
+     deleteUserProfile(state){
+      state.user = null;
+      state.token = null
+     },
+     
+     setUserStatus(state,action){
+      state.user.isActive = action.payload.isActive;
+      state.isActive = action.payload.isActive;
+      
+     }
     }
 })
 

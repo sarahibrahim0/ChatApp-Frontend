@@ -8,12 +8,12 @@ import { passwordActions } from "../slices/passwordSlice";
             const { data } = await request.post("/password/reset-password-link", {
                 email: userEmail,
               }); 
-            
-            dispatch(authActions.register(data.message));
+            // dispatch(authActions.register(data.message));
+            console.log(data)
+            dispatch(passwordActions.setResetedMsg(data.message));
             }
         catch(error){
-            dispatch(passwordActions.setError(error.response.data.message));
-            console.log(error);
+            dispatch(passwordActions.setError(error.response.data.msg));
 
         }
 
@@ -28,10 +28,10 @@ import { passwordActions } from "../slices/passwordSlice";
             } ); 
             
             dispatch(passwordActions.setReseted(data.message));
+            dispatch(passwordActions.clearResetedMsg());
             }
         catch(error){
-            dispatch(passwordActions.setError(error.response.data.message));
-            console.log(error);
+            dispatch(passwordActions.setError(error.response.data.msg));
 
         }
 

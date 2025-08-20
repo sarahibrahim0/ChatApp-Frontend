@@ -1,33 +1,22 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../redux/apiCalls/authApiCalls";
-import { authActions } from "../redux/slices/authSlice";
+
 const Register = () => {
-  // const {  register  , error , setError , user , registerMsg } = useAuth() ;
-
-  const { registerMessage , error } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+  const { error } = useSelector((state) => state.auth);
 
   const initialValues = {
     name: "",
-    password: "",
     email: "",
+    password: "",
   };
-  const registrationSchema = yup.object().shape({
-    name: yup
-      .string()
-      .required("Username is required")
-      .matches(
-        /^[a-zA-Z0-9]+$/,
-        "Username should contain only alphanumeric characters"
-      )
-      .max(15, "Username must be at most 15 characters long"),
 
+  const registerSchema = yup.object().shape({
+    name: yup.string().required("Username is required"),
     email: yup
       .string()
       .email("Please enter a valid email address")
@@ -45,109 +34,109 @@ const Register = () => {
       ),
   });
 
-  // From Submit Handler
-  const formSubmitHandler = (values) => dispatch(registerUser(values));
-
-useEffect(() => {
-  // Cleanup function to reset the error when the component unmounts
-  return () => {
-      dispatch(authActions.clearError());
+  const formSubmitHandler = async (values, { setSubmitting }) => {
+    await dispatch(registerUser(values, navigate));
+    setSubmitting(false);
   };
-}, []);
-
-useEffect(() => {
-  if (registerMessage) {
-      navigate("/email-sent");
-  }
-}, [registerMessage]);
 
   return (
-    <>
-      <Formik
-        onSubmit={formSubmitHandler}
-        initialValues={initialValues}
-        validationSchema={registrationSchema}
-      >
-        {(formik) => {
-          return (
-            <Form className="pt-5">
-              <div className=" items-start mb-4 w-full ">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center text-royal-purple mb-6">
+          Create Your Account
+        </h2>
+
+        <Formik
+          initialValues={initialValues}
+          validationSchema={registerSchema}
+          onSubmit={formSubmitHandler}
+        >
+          {(formik) => (
+            <Form className="space-y-5">
+              {/* Username */}
+              <div className="flex flex-col">
+                <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1">
+                  Username
+                </label>
                 <Field
                   name="name"
-                  type="name"
+                  type="text"
                   id="name"
-                  placeholder="Enter your username"
-                  className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
+                  placeholder="Enter your name"
+                  className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-royal-purple"
                 />
                 <ErrorMessage
                   name="name"
                   component="div"
-                  className="text-danger text-xs italic"
+                  className="text-danger text-xs italic mt-1"
                 />
               </div>
 
-              <div
-                className="flex flex-col items-start mb-4 w-full "
-              >
+              {/* Email */}
+              <div className="flex flex-col">
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
                 <Field
                   name="email"
                   type="email"
                   id="email"
                   placeholder="Enter your email"
-                  className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
+                  className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-royal-purple"
                 />
-
                 <ErrorMessage
                   name="email"
                   component="div"
-                  className="text-danger text-xs italic"
+                  className="text-danger text-xs italic mt-1"
                 />
               </div>
 
-              <div
-                direction="vertical"
-                className="flex flex-col items-start mb-4 w-full"
-              >
+              {/* Password */}
+              <div className="flex flex-col">
+                <label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
                 <Field
+                  name="password"
                   type="password"
                   id="password"
-                  name="password"
                   placeholder="Enter your password"
-                  className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
+                  className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-royal-purple"
                 />
-
                 <ErrorMessage
                   name="password"
                   component="div"
-                  className="text-danger text-xs italic"
+                  className="text-danger text-xs italic mt-1"
                 />
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
-                // disabled={formik.isSubmitting}
-                className=" m-auto "
+                disabled={formik.isSubmitting}
+                className="w-full py-2 bg-royal-purple text-white font-medium rounded-md hover:bg-english-violet transition-all duration-200"
               >
-                  Register
+                {formik.isSubmitting ? "Registering..." : "Register"}
               </button>
 
-              <div className=" margin-auto lg:whitespace-nowrap sm:whitespace-wrap self-start mt-4 text-blue-black lg:text-base sm:text-sm">
-                Do you already have an account?{" "}
+              {/* Link to Login */}
+              <div className="text-sm text-blue-black text-center">
+                Already have an account?{" "}
                 <Link
                   to="/login"
-                  className="text-very-blue lg:text-base sm:text-sm whitespace-nowrap hover:text-blue-black transition-all duration-300"
+                  className="text-very-blue hover:text-blue-black underline ml-1"
                 >
-                  Log In
+                  Login
                 </Link>
               </div>
             </Form>
-          );
-        }}
-      </Formik>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+          )}
+        </Formik>
 
-      </>
-    
+        {/* Error Message */}
+        {error && <p className="text-red-600 text-sm text-center mt-4">{error}</p>}
+      </div>
+    </div>
   );
 };
 

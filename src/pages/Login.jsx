@@ -1,24 +1,26 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/apiCalls/authApiCalls";
 import { authActions } from "../redux/slices/authSlice";
-import socket from "../utils/socket";
 
 const Login = () => {
-
-  const {error , user , token} = useSelector(state=>state.auth);
-
+  const { error, user, loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  
   const navigate = useNavigate();
+  const[email,setEmail] = useState('');
+  const[pass, setPass] = useState('');
+
+const resetFormRef = useRef(null);
 
   const initialValues = {
     password: "",
     email: "",
   };
+
+
   const loginSchema = yup.object().shape({
     email: yup
       .string()
@@ -38,93 +40,113 @@ const Login = () => {
   });
 
   useEffect(() => {
-    // Cleanup function to reset the error when the component unmounts
     return () => {
-        dispatch(authActions.clearError());
+      dispatch(authActions.clearError());
     };
   }, []);
-  // From Submit Handler
-  const formSubmitHandler = async (values) => { 
-    await dispatch(loginUser(values));
- }
-useEffect(() => {
-  if (user) {
-  
 
-    navigate('/');
-  }
+ const formSubmitHandler = (values , { resetForm }) => {
+    dispatch(loginUser(values)); 
+    setEmail(values.email);
+    setPass(values.password);
+    resetFormRef.current = resetForm; 
 
-}, [user, navigate]);
+};
+  useEffect(()=>{
+    if(error?.includes("deactivated")){
+     navigate("/account-deactivated", { state: { email: email,
+      password: pass } })
+    }
+  },[error]);
+
+  useEffect(() => {
+    if (user) {
+          if (resetFormRef.current) {
+          resetFormRef.current(); 
+      navigate("/");
+
+    }
+  }}, [user, navigate]);
 
   return (
-    <>
-      <Formik
-        onSubmit={formSubmitHandler}
-        initialValues={initialValues}
-        validationSchema={loginSchema}
-      >
-        {(formik) => {
-          return (
-            <Form className="pt-5">
-              <div
-                className="flex flex-col items-start mb-4 w-full "
-              >
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center text-royal-purple mb-6">
+          Welcome Back
+        </h2>
+
+        <Formik
+          onSubmit={formSubmitHandler}
+          initialValues={initialValues}
+          validationSchema={loginSchema}
+        >
+          {(formik) => (
+            <Form className="space-y-5">
+              {/* Email Field */}
+              <div className="flex flex-col">
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
                 <Field
                   name="email"
                   type="email"
                   id="email"
                   placeholder="Enter your email"
-                  className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
+                  className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-royal-purple"
                 />
-
                 <ErrorMessage
                   name="email"
                   component="div"
-                  className="text-danger text-xs italic"
+                  className="text-danger text-xs italic mt-1"
                 />
               </div>
 
-              <div
-                className="flex flex-col items-start mb-4 w-full"
-              >
+              {/* Password Field */}
+              <div className="flex flex-col">
+                <label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
                 <Field
                   type="password"
                   id="password"
                   name="password"
                   placeholder="Enter your password"
-                  className=" w-full rounded-lg md:text-base sm:text-sm p-2  border-[1px]"
+                  className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-royal-purple"
                 />
-
                 <ErrorMessage
                   name="password"
                   component="div"
-                  className="text-danger text-xs italic"
+                  className="text-danger text-xs italic mt-1"
                 />
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
-                disabled={formik.isSubmitting}
-                className=" m-auto "
+                disabled={formik.isSubmitting && !error}
+                className="w-full py-2 bg-royal-purple text-white font-medium rounded-md hover:bg-english-violet transition-all duration-200"
               >
-                Login
+                {(formik.isSubmitting && !error) ? "Logging in..." : "Login"}
               </button>
 
-              <div className=" margin-auto lg:whitespace-nowrap sm:whitespace-wrap self-start mt-4 text-blue-black lg:text-base sm:text-sm">
+              {/* Forgot Password */}
+              <div className="text-sm text-blue-black text-center">
                 Forgot Password?{" "}
                 <Link
                   to="/forget-password"
-                  className="text-very-blue lg:text-base sm:text-sm whitespace-nowrap hover:text-blue-black transition-all duration-300"
+                  className="text-very-blue hover:text-blue-black underline ml-1"
                 >
                   Reset Password
                 </Link>
               </div>
             </Form>
-          );
-        }}
-      </Formik>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </>
+          )}
+        </Formik>
+
+        {/* Error Message */}
+        {error && <p className="text-red-600 text-sm text-center mt-4">{error}</p>}
+      </div>
+    </div>
   );
 };
 

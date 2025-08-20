@@ -1,16 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { string } from "yup";
 
 const userSlice =  createSlice({
     name: 'users',
     initialState:{
-        error: null,
+    error: null,
+    loading: false,
     users: [],
     searchedUser : "",
-    receiverProfile : null
+    receiverProfile : null,
     },
     reducers:{
         setError(state, action) {
-            state.errorPassword = action.payload;
+            state.error = action.payload;
+          },
+          setLoading(state) {
+            state.loading = true;
+            state.error = null;
+          },
+          clearLoading(state) {
+            state.loading = false;
           },
           clearError(state) {
             state.errorPassword = null;
@@ -21,6 +30,10 @@ const userSlice =  createSlice({
      searchUserEmail(state,action){
       state.searchedUser = action.payload
      },
+     clearSearchedUser(state,action){
+      state.searchedUser = null;
+     }
+     ,
      getUserProfile(state,action){
       state.receiverProfile = action.payload
      }

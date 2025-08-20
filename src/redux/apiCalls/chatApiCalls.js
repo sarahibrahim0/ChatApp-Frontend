@@ -7,9 +7,8 @@ export function sendMessage(receiverId, senderId, text ){
 return async(dispatch)=>{
   try{
     const {data} = await request.post('/messages', {receiverId, senderId, text });
-  dispatch(chatActions.sendMessage(data));
-  // dispatch(chatActions.setLastMsg(data));
-
+    console.log(data);
+  dispatch(chatActions.sendMessage(data.message));
   }catch(error){
   dispatch(chatActions.setError(error.response.data.message));
   }

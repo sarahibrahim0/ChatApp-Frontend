@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { usersActions } from "../redux/slices/usersSlice";
 import { getUserById } from "../redux/apiCalls/usersApiCalls";
 import img from "../assets/default-profile.png";
 import { useParams } from "react-router-dom";
@@ -12,6 +11,7 @@ import {
   PencilIcon 
 } from "@heroicons/react/24/solid";
 
+
 const ReceiverProfile = () => {
   const { receiverId } = useParams();
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const ReceiverProfile = () => {
   }, [receiverId]);
 
   const { receiverProfile } = useSelector((state) => state.users);
+  
 
   return (
     <aside className="w-80 bg-white border-l border-gray-200 p-6 flex flex-col gap-6 text-xs">
@@ -36,12 +37,10 @@ const ReceiverProfile = () => {
         <h3 className="text-base font-semibold text-gray-900">
           {receiverProfile?.name}
         </h3>
-        <p className="text-xs text-gray-500">UX/UI Designer</p>
-   <button className="mt-2 px-4 py-1 text-xs md:text-xxs font-medium text-gray-700 border border-gray-300 rounded-full hover:bg-gray-100 transition flex items-center gap-1">
-  <PencilIcon className="w-5 h-5 text-royal-purple mt-0.5"/>
-  Edit Profile
-</button>
+<p className="text-xs text-gray-500">{receiverProfile?.title || "Not Provided"}</p>
+ 
       </div>
+            
 
       {/* Info Section */}
       <div className="space-y-4">
@@ -67,7 +66,7 @@ const ReceiverProfile = () => {
       <div>
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-xs font-semibold text-gray-900">Shared Media</h3>
-          <button className="text-xxs text-blue-500 hover:underline">See All</button>
+          <button className="text-xxs text-royal-purple hover:underline">See All</button>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {receiverProfile?.media?.length > 0 ? (
