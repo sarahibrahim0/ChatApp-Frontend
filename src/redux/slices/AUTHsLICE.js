@@ -3,18 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 const AUTHsLICE = createSlice({
     name: "auth",
     initialState: {
-        user: localStorage.getItem("userInfo") ?
-        JSON.parse(localStorage.getItem('userInfo')) : null,
+          user: localStorage.getItem("userInfo")
+      ? JSON.parse(localStorage.getItem("userInfo"))
+      : null,
+    token:  JSON.parse(localStorage.getItem("token")) || null,
+    isActive: localStorage.getItem("isActive")
+      ? JSON.parse(localStorage.getItem("isActive"))
+      : null,
         registerMessage : null,
         isEmailVerified: false,
         isVerifying: false,
         error: null,
-  token: localStorage.getItem("token") 
-        ? localStorage.getItem("token") 
-        : null,
-                userId: null,
-        isActive: localStorage.getItem('isActive')? JSON.parse(localStorage.getItem('isActive')) : null
-,loading: false
+  
+                userId: null,loading: false
     },
     reducers: {
     login(state, action){
@@ -29,9 +30,12 @@ const AUTHsLICE = createSlice({
         state.token = action.payload;
     },
     logout(state){
-        state.user = null;
-        state.token = null;
+              state.user = null;
+      state.token = null;
+      state.isActive = null;
         localStorage.removeItem('userInfo');
+        localStorage.removeItem('token');
+        localStorage.removeItem('isActive');
     },
     register(state, action){
     state.registerMessage = action.payload;
@@ -68,7 +72,7 @@ const AUTHsLICE = createSlice({
     },
      deleteUserProfile(state){
       state.user = null;
-      state.token = null
+      state.token = null;
      },
      
      setUserStatus(state,action){

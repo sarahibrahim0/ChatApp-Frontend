@@ -16,8 +16,8 @@ const NavBar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const logOut = async () => {
-    await dispatch(logoutUser());
+  const logOut =  () => {
+    dispatch(logoutUser());
   };
   
   const location = useLocation();

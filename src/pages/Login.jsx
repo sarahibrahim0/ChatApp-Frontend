@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/apiCalls/authApiCalls";
 import { authActions } from "../redux/slices/authSlice";
-
+import socket from "../utils/socket";
 const Login = () => {
   const { error, user, loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -50,6 +50,7 @@ const resetFormRef = useRef(null);
     setEmail(values.email);
     setPass(values.password);
     resetFormRef.current = resetForm; 
+    
 
 };
   useEffect(()=>{
@@ -64,6 +65,8 @@ const resetFormRef = useRef(null);
           if (resetFormRef.current) {
           resetFormRef.current(); 
       navigate("/");
+      socket.emit("register", user._id);
+
 
     }
   }}, [user, navigate]);

@@ -1,3 +1,4 @@
+import { date } from "yup";
 import request from "../../utils/request";
 import { chatActions } from "../slices/chatSlice";
 //login user
@@ -7,7 +8,6 @@ export function sendMessage(receiverId, senderId, text ){
 return async(dispatch)=>{
   try{
     const {data} = await request.post('/messages', {receiverId, senderId, text });
-    console.log(data);
   dispatch(chatActions.sendMessage(data.message));
   }catch(error){
   dispatch(chatActions.setError(error.response.data.message));
@@ -64,4 +64,33 @@ export function getSingleChat(firstId , secondId) {
     };
   }
 
+
+export const deleteSingleMessage = (msgId, chatId, token) => {
+  return async (dispatch) => {
+    if(!token){
+     throw new Error("unauthorized")
+    }
+    try {
+      // 1️⃣ Optimistic update
+      dispatch(chatActions.deleteMessageOptimistic({ msgId, chatId }));
+
+      // 2️⃣ Request to server
+      const {data} = await request.delete(`/messages/${msgId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+
+      if (data.deletedMessage) {
+        dispatch(chatActions.confirmDeleteMessage({ msgId }));
+        dispatch(chatActions.updateLastMsgInChatList({...data.lastMsg , chatId})) 
+      } else {
+        throw new Error("Failed to delete message");
+      }
+    } catch (error) {
+      // 3️⃣ Rollback
+      dispatch(chatActions.restoreDeletedMessage({ msgId, chatId }));
+      dispatch(chatActions.setError("Error deleting message"));
+    }
+  };
+};
 

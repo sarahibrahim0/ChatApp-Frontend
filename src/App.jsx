@@ -15,17 +15,13 @@ import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
 import DeactivationPage from "./pages/DeactivationPage";
 
-// 👇 PrivateRoute Component
 
 function App() {
 
 
   const { user, token, registerMessage } = useSelector((state) => state.auth);
   const { resetedMsg } = useSelector((state) => state.password);
-  const PrivateRoute = ({ children }) => {
-  const { user, token } = useSelector((state) => state.auth);
-  return user && token ? children : <Login />;
-};
+
   useEffect(() => {
     if (user && user._id) {
       socket.connect();
@@ -48,20 +44,21 @@ function App() {
       <div className="flex-1 overflow-y-auto">
         <Routes>
           {/* لو فيه user & token يدخل على Chats مباشرة */}
-          <Route path="/" element={token ? <Chats /> : <Login />} />
+          <Route path="/" element={token && user ? <Chats /> : <Login />} />
 
           <Route
             path="/:receiverId"
             element={
-              <PrivateRoute>
+              token? 
                 <Chats />
-              </PrivateRoute>
+                :
+              <Login/>
             }
           />
 
           <Route
             path="/login"
-            element={token ? <Chats /> : <Login />}
+            element={ !token ?  <Login /> : <Chats /> }
           />
 
           <Route path="/register" element={<Register />} />
@@ -91,18 +88,20 @@ function App() {
           <Route
             path="/profile"
             element={
-              <PrivateRoute>
+              token?
                 <UserProfile />
-              </PrivateRoute>
+                :
+              <Login/>
             }
           />
 
           <Route
             path="/settings"
             element={
-              <PrivateRoute>
+              token?
                 <Settings />
-              </PrivateRoute>
+                :
+              <Login/>
             }
           />
 

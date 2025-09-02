@@ -68,7 +68,7 @@ const Register = () => {
                 <ErrorMessage
                   name="name"
                   component="div"
-                  className="text-danger text-xs italic mt-1"
+                  className="text-red-600 text-xs italic mt-1"
                 />
               </div>
 
@@ -87,7 +87,7 @@ const Register = () => {
                 <ErrorMessage
                   name="email"
                   component="div"
-                  className="text-danger text-xs italic mt-1"
+                  className="text-red-600 text-xs italic mt-1"
                 />
               </div>
 
@@ -106,7 +106,7 @@ const Register = () => {
                 <ErrorMessage
                   name="password"
                   component="div"
-                  className="text-danger text-xs italic mt-1"
+                  className="text-red-600 text-xs italic mt-1"
                 />
               </div>
 

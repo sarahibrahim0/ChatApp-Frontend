@@ -4,34 +4,38 @@ import { authActions } from "../slices/AUTHsLICE.JS";
 //login user
 //Must return anonymous function
 
-export function loginUser(user ) {
+export function loginUser(user) {
   return async (dispatch) => {
     try {
       dispatch(authActions.setLoading());
       dispatch(authActions.clearError());
+
       const { data } = await request.post("/users/login", user);
 
       dispatch(authActions.login(data));
+       console.log(data.token)
       if (data.token) {
-        dispatch(authActions.setToken(data.token));
+        // save to localStorage in a clean way
         localStorage.setItem("userInfo", JSON.stringify(data));
-    localStorage.setItem('token', JSON.stringify(data.token)); 
+        localStorage.setItem("token", JSON.stringify(data.token)); // no stringify
+        localStorage.setItem("isActive", JSON.stringify(data.isActive));
       }
+
     } catch (error) {
-      if ( error.response.data.message.includes("deactivated") ) 
-        {
-          dispatch(authActions.setUserId(error.response.data.userId));
-}
+      if (error.response?.data?.message?.includes("deactivated")) {
+        dispatch(authActions.setUserId(error.response.data.userId));
+      }
+
       dispatch(authActions.clearLoading());
-      dispatch(authActions.setError(error.response.data.message));
+      dispatch(authActions.setError(error.response?.data?.message || "Login failed"));
     }
   };
 }
 
+
 export function logoutUser() {
   return (dispatch) => {
     dispatch(authActions.logout());
-    localStorage.removeItem("userInfo");
   };
 }
 
