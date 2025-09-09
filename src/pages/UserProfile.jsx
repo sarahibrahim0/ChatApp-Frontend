@@ -2,7 +2,7 @@ import { useState} from "react";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { editUserProfile } from "../redux/apiCalls/usersApiCalls";
-import EditProfileForm from "../components/EditPRofileForm";
+import EditProfileForm from "../components/EditProfileForm";
 
 const UserProfile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -34,7 +34,7 @@ const UserProfile = () => {
   onClose();
   }
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white px-4 sm:px-6 py-10">
+    <div className="flex flex-col items-center min-h-screen bg-white  dark:bg-licorice px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="flex items-center justify-between w-full max-w-3xl mb-8">
         <h1 className="text-xl sm:text-2xl font-semibold text-royal-purple">Your Profile</h1>
@@ -48,7 +48,7 @@ const UserProfile = () => {
       </div>
 
       {/* Profile Container */}
-      <div className="w-full max-w-3xl bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div className="w-full max-w-3xl bg-gray-50 dark:text-white-smoke dark:bg-licorice border border-gray-200 rounded-xl p-6 shadow-sm">
         {/* Profile Photo */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-6">
           <img
@@ -61,15 +61,15 @@ const UserProfile = () => {
             <h2 className="text-lg font-medium text-royal-purple">{user
           ?.username
           }</h2>
-            <p className="text-sm text-gray-500">{user
+            <p className="text-sm text-gray-500 dark:text-white-smoke dark:bg-licorice">{user
           ?.email}</p>
           </div>
         </div>
 
         {/* Profile Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm text-gray-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm text-gray-700 dark:text-white-smoke dark:bg-licorice">
           <div>
-            <span className="font-medium text-royal-purple">Gender:</span>{" "}
+            <span className="font-medium text-royal-purple ">Gender:</span>{" "}
             {user
           ?.gender || "—"}
           </div>

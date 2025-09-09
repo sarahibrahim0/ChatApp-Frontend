@@ -1,6 +1,9 @@
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+
+    darkMode: "class", // مهم عشان نتحكم بالدارك مود عن طريق إضافة class="dark"
+
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
@@ -26,6 +29,16 @@ module.exports = {
         'xxs': '0.625rem', // 10px
       },
     },
+
+          screens: {
+      xs: "480px",   // شاشة صغيرة جداً
+      sm: "640px",   // small
+      md: "768px",   // medium
+      lg: "1024px",  // large
+      xl: "1280px",  // extra large
+      "2xl": "1536px", // double extra large
+    },
+
   },
   plugins: [],
 }

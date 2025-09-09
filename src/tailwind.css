@@ -7,3 +7,11 @@
 body {
   @apply font-sans;
 }
+
+/* optional: transitions for theme changes */
+:root {
+  --transition-duration: 200ms;
+}
+html {
+  transition: background-color var(--transition-duration), color var(--transition-duration);
+}

@@ -106,6 +106,24 @@ const ChatDialogue = ({ onEdit }) => {
     dispatch(deleteSingleMessage(msgId, currentChat._id, token));
   };
 
+  // 🎯 listener للطرف التاني
+useEffect(() => {
+  const handleDeleteMessage = ({ chatId, msgId , lastMsg }) => {
+    // فقط لو الشات الحالي
+    if (currentChat && currentChat._id === chatId) {
+      dispatch(chatActions.deleteMessageOptimistic({ chatId, msgId }));
+      dispatch(chatActions.updateLastMsgInChatList({...lastMsg , chatId}));
+
+    }
+  };
+
+  socket.on("deleteMessage", handleDeleteMessage);
+
+  return () => {
+    socket.off("deleteMessage", handleDeleteMessage);
+  };
+}, [currentChat, dispatch]);
+
   const sendNewMessage = async () => {
     if (!message.trim() && !file) return;
     if (receiverProfile?.isDeleted) return;
@@ -135,9 +153,16 @@ const ChatDialogue = ({ onEdit }) => {
     if (receiverId) dispatch(getSingleChat(user._id, receiverId));
   }, [user, receiverId]);
 
-  useEffect(() => {
-    if (currentChat) dispatch(getChatMessages(currentChat._id));
-  }, [currentChat]);
+useEffect(() => {
+  if (currentChat) {
+    // أولًا: جلب الرسائل
+    dispatch(getChatMessages(currentChat._id));
+
+    // ثانيًا: الانضمام للـ room الخاص بالشات
+    socket.emit("joinChat", currentChat._id);
+
+  }
+}, [currentChat]);
 
   useEffect(() => { requestAnimationFrame(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }); }, [currentChatMessages]);
 
@@ -157,133 +182,144 @@ const ChatDialogue = ({ onEdit }) => {
 
   if (!receiverId) {
     return (
-      <div className="h-screen w-full bg-cover bg-center flex items-center justify-center" style={{ backgroundImage: `url(${bgImg})` }}>
-        <h2 className="text-white text-xl font-semibold bg-black bg-opacity-30 p-4 rounded-xl">
-          Select a chat to start messaging 💬
-        </h2>
-      </div>
+    <div
+      className="relative h-screen w-full bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${bgImg})` }}
+    >
+      {/* Overlay Dark Mode */}
+      <div className="absolute inset-0  dark:bg-black/60"></div>
+
+      <h2 className="relative z-10 text-white text-xl font-semibold bg-black bg-opacity-30 p-4 rounded-xl">
+        Select a chat to start messaging 💬
+      </h2>
+    </div>
+
     );
   }
 
   return (
-    <div className="flex flex-row h-screen overflow-hidden">
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-white py-3 border-b border-gray-200">
-        <ChatHeader receiver={receiverProfile} />
-        <div className="flex-1 flex flex-col overflow-hidden px-3">
-          <div className="flex-1 overflow-y-auto space-y-3 py-4">
-            {currentChatMessages.length > 0 ? (
-              currentChatMessages.map(msg => {
-                const isSender = msg.senderId === user._id || msg.senderId._id === user._id;
-                return (
-                  <div key={msg._id} className={`w-full flex ${isSender ? "justify-end" : "justify-start"}`}>
-                    <div className={`flex items-start gap-2 max-w-[60%] ${isSender ? "flex-row-reverse" : "flex-row"}`}>
-                      <div className="flex flex-col gap-1">
-                        {msg.media?.map((m, idx) => {
-                          if (m.type === "image") return <img key={idx} src={m.url} className="w-full max-h-60 object-cover rounded-xl mb-1 cursor-pointer hover:scale-105 transition-transform" onClick={() => window.open(m.url, "_blank")} />;
-                          if (m.type === "voice") return <div key={idx} className="w-64 mb-1 bg-gray-100 rounded-lg p-2"><audio controls className="w-full"><source src={m.url} /></audio></div>;
-                          if (m.type === "video") return <video key={idx} controls className="w-full rounded mb-1"><source src={m.url} /></video>;
-                          if (m.type === "file") return m.url && m.url.endsWith(".pdf") ? <div key={idx} className="mb-1 w-64 bg-gray-100 rounded-lg p-2"><embed src={m.url} type="application/pdf" width="100%" height="120" /><p className="text-sm text-gray-700 mt-1">📄 PDF File</p></div> : <p key={idx} className="text-sm text-gray-700 cursor-pointer hover:text-royal-purple" onClick={() => window.open(m.url, "_blank")}>📂 File</p>;
-                          return null;
-                        })}
-                        {msg.text && <div className={`w-full text-sm px-4 py-2 rounded-2xl shadow-sm break-words ${isSender ? "bg-royal-purple text-white rounded-br-none" : "bg-english-violet text-white rounded-bl-none"}`}>{msg.text}</div>}
-                        <p className="text-[10px] text-gray-300 whitespace-nowrap">{formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}</p>
-                      </div>
+<div className="flex flex-col lg:flex-row h-screen overflow-hidden ">
+  {/* Chat Area */}
+  <div className="flex-1 flex flex-col h-full overflow-hidden bg-white dark:bg-licorice
+  py-3 border-b border-gray-200 lg:border-b-0 lg:border-r  lg:border-gray-200  ">
+    <ChatHeader receiver={receiverProfile} />
+    <div className="flex-1 flex flex-col overflow-hidden px-3">
+      <div className="flex-1 overflow-y-auto space-y-3 py-4">
+        {currentChatMessages.length > 0 ? (
+          currentChatMessages.map(msg => {
+            const isSender = msg.senderId === user._id || msg.senderId._id === user._id;
+            return (
+              <div key={msg._id} className={`w-full flex ${isSender ? "justify-end" : "justify-start"}`}>
+                <div className={`flex items-start gap-2 max-w-[60%] sm:max-w-[70%] ${isSender ? "flex-row-reverse" : "flex-row"}`}>
+                  <div className="flex flex-col gap-1">
+                    {/* Media */}
+                    {msg.media?.map((m, idx) => {
+                      if (m.type === "image") return <img key={idx} src={m.url} className="w-full max-h-60 object-cover rounded-xl mb-1 cursor-pointer hover:scale-105 transition-transform" onClick={() => window.open(m.url, "_blank")} />;
+                      if (m.type === "voice") return <div key={idx} className="w-64 mb-1 bg-gray-100 rounded-lg p-2"><audio controls className="w-full"><source src={m.url} /></audio></div>;
+                      if (m.type === "video") return <video key={idx} controls className="w-full rounded mb-1"><source src={m.url} /></video>;
+                      if (m.type === "file") return m.url && m.url.endsWith(".pdf") ? <div key={idx} className="mb-1 w-64 bg-gray-100 rounded-lg p-2"><embed src={m.url} type="application/pdf" width="100%" height="120" /><p className="text-sm text-gray-700 mt-1">📄 PDF File</p></div> : <p key={idx} className="text-sm text-gray-700 cursor-pointer hover:text-royal-purple" onClick={() => window.open(m.url, "_blank")}>📂 File</p>;
+                      return null;
+                    })}
+                    {msg.text && <div className={`w-full text-sm px-4 py-2 rounded-2xl shadow-sm break-words ${isSender ? "bg-royal-purple text-white rounded-br-none" : "bg-english-violet text-white rounded-bl-none"}`}>{msg.text}</div>}
+                    <p className="text-[10px] text-gray-300 whitespace-nowrap">{formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}</p>
+                  </div>
 
-                      {isSender && (
-                        <div className="relative" ref={dropdownRef}>
-                          <button onClick={() => setOpenDropdown(openDropdown === msg._id ? null : msg._id)} className="p-1 rounded-full hover:bg-gray-200 focus:outline-none">
-                            <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                          </button>
-                          {openDropdown === msg._id && (
-                            <div className="absolute right-0 mt-2 w-28 bg-white shadow-lg rounded-lg ring-1 ring-black ring-opacity-5 z-50">
-                              <div className="py-1">
-                                <button onClick={() => { onEdit && onEdit(msg); setOpenDropdown(null); }} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                  <PencilSquareIcon className="h-4 w-4 mr-2 text-blue-500" /> Edit
-                                </button>
-                                <button onClick={() => onDeleteMessage(msg._id)} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                  <TrashIcon className="h-4 w-4 mr-2 text-red-500" /> Delete
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                  {isSender && (
+                    <div className="relative" ref={dropdownRef}>
+                      <button onClick={() => setOpenDropdown(openDropdown === msg._id ? null : msg._id)} className="p-1 rounded-full hover:bg-gray-200 focus:outline-none">
+                        <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+                      </button>
+                      {openDropdown === msg._id && (
+                        <div className="absolute right-0 mt-2 w-28 bg-white shadow-lg rounded-lg ring-1 ring-black ring-opacity-5 z-50">
+                          <div className="py-1">
+                            {/* <button onClick={() => { onEdit && onEdit(msg); setOpenDropdown(null); }} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              <PencilSquareIcon className="h-4 w-4 mr-2 text-blue-500" /> Edit
+                            </button> */}
+                            <button onClick={() => onDeleteMessage(msg._id)} className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              <TrashIcon className="h-4 w-4 mr-2 text-red-500" /> Delete
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-gray-400 text-center mt-10">No messages</p>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* 🎤 Audio Preview */}
-          {audioBlob && (
-            <div className="mb-2 flex items-center gap-3 p-2 bg-gray-100 rounded-lg w-64">
-              <audio controls src={URL.createObjectURL(audioBlob)} className="w-full" />
-              <button onClick={sendRecording} className="bg-royal-purple text-white px-3 py-1 rounded text-sm hover:bg-english-violet">Send</button>
-              <button onClick={() => setAudioBlob(null)} className="text-gray-500 hover:text-royal-purple p-1 rounded"><XMarkIcon className="h-5 w-5" /></button>
-            </div>
-          )}
-
-          {/* 📂 File Preview */}
-          {preview && (
-            <div className="mb-2 flex items-center gap-3 p-2 bg-gray-100 rounded-lg max-w-xs">
-              {file.category === "image" && <img src={preview} alt="preview" className="w-32 h-32 object-cover rounded-xl cursor-pointer hover:scale-105 transition-transform" onClick={() => window.open(preview, "_blank")} />}
-              {file.category === "file" && file.type === "application/pdf" && <div className="w-32"><embed src={preview} type="application/pdf" width="100%" height="100" /><p className="text-sm text-gray-700 mt-1 truncate">{file.raw.name}</p></div>}
-              {(file.category === "audio" || file.category === "video") && <audio controls src={preview} className="w-64" />}
-              <button onClick={() => { setFile(null); setPreview(null); }} className="text-gray-500 hover:text-royal-purple p-1 rounded"><XMarkIcon className="h-5 w-5" /></button>
-            </div>
-          )}
-
-          {/* ✍️ Input */}
-          {receiverProfile?.isDeleted ? (
-            <div className="text-center text-red-500 py-2">You can't send messages to this user</div>
-          ) : (
-            <div className="border-t border-gray-200 bg-white relative mt-2 flex items-center gap-2 px-3 py-2">
-              <label className="cursor-pointer">
-                <PhotoIcon className="h-4 w-4 text-royal-purple hover:text-english-violet" />
-                <input key={inputKey} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, "image")} />
-              </label>
-              <label className="cursor-pointer">
-                <PaperClipIcon className="h-4 w-4 text-royal-purple hover:text-english-violet" />
-                <input type="file" className="hidden" onChange={(e) => handleFileChange(e, "fileOrAudio")} />
-              </label>
-              {!recording ? (
-                <button onClick={startRecording} className="text-royal-purple p-1 rounded">
-                  <MicrophoneIcon className="h-4 w-4" />
-                </button>
-              ) : (
-                <button onClick={stopRecording} className="text-red-500 p-1 rounded">⏹️</button>
-              )}
-              <TextareaAutosize
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendNewMessage(); } }}
-                minRows={1} maxRows={6}
-                placeholder="Type a message"
-                className="flex-1 py-2 px-4 border border-gray-200 rounded-2xl focus:outline-none text-sm placeholder:text-gray-400"
-              />
-              <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="absolute right-12 text-gray-500 hover:text-royal-purple">
-                <FaceSmileIcon className="h-4 w-4" />
-              </button>
-              {showEmojiPicker && (
-                <div className="absolute bottom-16 right-0 z-50 shadow-lg">
-                  <EmojiPicker onEmojiClick={(emoji) => setMessage(prev => prev + emoji.emoji)} />
+                  )}
                 </div>
-              )}
-              <PaperAirplaneIcon onClick={sendNewMessage} className="text-royal-purple h-5 w-5 cursor-pointer hover:text-english-violet" />
-            </div>
-          )}
-        </div>
+              </div>
+            );
+          })
+        ) : (
+          <p className="text-gray-400 text-center mt-10">No messages</p>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* 👤 Receiver Profile */}
-      <div className="w-80 border-l border-gray-200 bg-white">
-        <ReceiverProfile />
-      </div>
+      {/* 🎤 Audio Preview */}
+      {audioBlob && (
+        <div className="mb-2 flex items-center gap-3 p-2 bg-gray-100 rounded-lg w-full sm:w-64">
+          <audio controls src={URL.createObjectURL(audioBlob)} className="w-full" />
+          <button onClick={sendRecording} className="bg-royal-purple text-white px-3 py-1 rounded text-sm hover:bg-english-violet">Send</button>
+          <button onClick={() => setAudioBlob(null)} className="text-gray-500 hover:text-royal-purple p-1 rounded"><XMarkIcon className="h-5 w-5" /></button>
+        </div>
+      )}
+
+      {/* 📂 File Preview */}
+      {preview && (
+        <div className="mb-2 flex items-center gap-3 p-2 bg-gray-100 rounded-lg w-full sm:max-w-xs">
+          {file.category === "image" && <img src={preview} alt="preview" className="w-32 h-32 object-cover rounded-xl cursor-pointer hover:scale-105 transition-transform" onClick={() => window.open(preview, "_blank")} />}
+          {file.category === "file" && file.type === "application/pdf" && <div className="w-32"><embed src={preview} type="application/pdf" width="100%" height="100%" /><p className="text-sm text-gray-700 mt-1 truncate">{file.raw.name}</p></div>}
+          {(file.category === "audio" || file.category === "video") && <audio controls src={preview} className="w-full sm:w-64" />}
+          <button onClick={() => { setFile(null); setPreview(null); }} className="text-gray-500 hover:text-royal-purple p-1 rounded"><XMarkIcon className="h-5 w-5" /></button>
+        </div>
+      )}
+
+      {/* ✍️ Input */}
+      {receiverProfile?.isDeleted ? (
+        <div className="text-center text-red-500 py-2">You can't send messages to this user</div>
+      ) : (
+        <div className="border-t border-gray-200  bg-white dark:bg-licorice relative mt-2 flex items-center gap-2 px-3 py-2">
+          <label className="cursor-pointer">
+            <PhotoIcon className="h-4 w-4 text-royal-purple hover:text-english-violet" />
+            <input key={inputKey} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, "image")} />
+          </label>
+          <label className="cursor-pointer">
+            <PaperClipIcon className="h-4 w-4 text-royal-purple hover:text-english-violet" />
+            <input type="file" className="hidden" onChange={(e) => handleFileChange(e, "fileOrAudio")} />
+          </label>
+          {!recording ? (
+            <button onClick={startRecording} className="text-royal-purple p-1 rounded">
+              <MicrophoneIcon className="h-4 w-4" />
+            </button>
+          ) : (
+            <button onClick={stopRecording} className="text-red-500 p-1 rounded">⏹️</button>
+          )}
+          <TextareaAutosize
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendNewMessage(); } }}
+            minRows={1} maxRows={6}
+            placeholder="Type a message"
+            className="flex-1 py-2 px-4 border border-gray-200 rounded-2xl focus:outline-none text-sm placeholder:text-gray-400"
+          />
+          <button type="button" onClick={() => setShowEmojiPicker(prev => !prev)} className="absolute right-12 text-gray-500 hover:text-royal-purple">
+            <FaceSmileIcon className="h-4 w-4" />
+          </button>
+          {showEmojiPicker && (
+            <div className="absolute bottom-16 right-0 z-50 shadow-lg">
+              <EmojiPicker onEmojiClick={(emoji) => setMessage(prev => prev + emoji.emoji)} />
+            </div>
+          )}
+          <PaperAirplaneIcon onClick={sendNewMessage} className="text-royal-purple h-5 w-5 cursor-pointer hover:text-english-violet" />
+        </div>
+      )}
     </div>
+  </div>
+
+  {/* 👤 Receiver Profile */}
+  <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l dark:border-gray-900 border-gray-200 bg-white dark:bg-licorice overflow-auto hidden lg:block ">
+    <ReceiverProfile />
+  </div>
+</div>
+
   );
 };
 

@@ -82,7 +82,10 @@ export const deleteSingleMessage = (msgId, chatId, token) => {
 
       if (data.deletedMessage) {
         dispatch(chatActions.confirmDeleteMessage({ msgId }));
-        dispatch(chatActions.updateLastMsgInChatList({...data.lastMsg , chatId})) 
+        dispatch(chatActions.updateLastMsgInChatList({...data.lastMsg , chatId}));
+
+       socket.emit("deleteMessage", { chatId, msgId });
+
       } else {
         throw new Error("Failed to delete message");
       }

@@ -17,10 +17,12 @@ const SearchUser = () => {
   const navigate = useNavigate();
   const { searchedUser, loading, error } = useSelector((state) => state.users);
   const [searchedEmail, setSearchedEmail] = useState("");
+  const [hasSearched, setHasSearched] = useState(false); // 🆕 عشان نعرف المستخدم عمل سيرش فعلاً
 
   const handleSearch = () => {
     if (searchedEmail.trim() !== "") {
       dispatch(getUserByEmail(searchedEmail.trim()));
+      setHasSearched(true); // 🆕 هنا نأكد إن في سيرش حصل
     }
   };
 
@@ -34,6 +36,7 @@ const SearchUser = () => {
     dispatch(clearSearchedUser());
     dispatch(getUserById(user._id));
     setSearchedEmail("");
+    setHasSearched(false); // 🆕 نرجعه false بعد ما ندخل على اليوزر
     navigate(`/${user._id}`);
   };
 
@@ -66,21 +69,28 @@ const SearchUser = () => {
       {!loading && searchedUser && (
         <div
           onClick={() => handleUserClick(searchedUser)}
-          className="flex items-center gap-3 p-3 rounded-xl cursor-pointer bg-gradient-to-r from-russian-violet to-royal-purple hover:brightness-110 transition-all shadow-md hover:shadow-lg text-white"
+          className="flex items-center gap-2 p-2 rounded-lg cursor-pointer 
+                     bg-gradient-to-r from-russian-violet to-royal-purple 
+                     hover:brightness-110 transition-all shadow text-white 
+                     w-full h-12"
         >
-          <UserCircleIcon className="h-9 w-9 text-white-smoke" />
-          <div className="text-sm leading-tight">
-            <p className="font-semibold">{searchedUser.name}</p>
-            <p className="text-xs text-white-smoke">{searchedUser.email}</p>
+          <UserCircleIcon className="h-7 w-7 text-white-smoke flex-shrink-0" />
+          <div className="text-xs leading-tight truncate w-[calc(100%-2rem)]">
+            <p className="font-medium truncate">{searchedUser.name}</p>
+            <p className="text-[10px] text-white-smoke truncate">
+              {searchedUser.email}
+            </p>
           </div>
         </div>
       )}
 
       {/* No User Found */}
-      {!loading && error && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-white-smoke text-royal-purple shadow-sm">
+      {!loading && error && hasSearched && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-white-smoke text-royal-purple shadow-sm">
           <ExclamationCircleIcon className="h-5 w-5 text-royal-purple" />
-          <p className="text-xs font-medium">لا يوجد مستخدم بهذا الإيميل</p>
+          <p className="text-xs font-medium">
+            Email not registered
+          </p>
         </div>
       )}
     </div>

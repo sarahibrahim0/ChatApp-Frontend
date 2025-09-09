@@ -3,13 +3,15 @@ import { authReducer } from "./slices/AUTHsLICE.JS";
 import { passwordReducer } from "./slices/passwordSlice";
 import { chatReducer } from "./slices/chatSlice";
 import { usersReducer } from "./slices/usersSlice";
+import { themeReducer } from "./slices/themeSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     password: passwordReducer,
     chat: chatReducer,
-    users: usersReducer
+    users: usersReducer,
+    theme: themeReducer
   },
 });
 

@@ -1,115 +1,171 @@
 import { useEffect, useRef, useState } from "react";
 import socket from "../utils/socket";
+import { useSelector } from "react-redux";
+import IncomingCallModal from "./IncomingCallModal";
 
-const VoiceCall = ({ currentUserId, receiverId, onClose }) => {
+const VoiceCall = ({ receiverId, receiverName, incomingCall, onClose }) => {
   const [isCalling, setIsCalling] = useState(false);
   const peerConnection = useRef(null);
   const localStream = useRef(null);
   const remoteAudioRef = useRef(null);
+  const pendingCandidates = useRef([]);
+  const { user } = useSelector((state) => state.auth);
 
+  // Setup mic + RTCPeerConnection
   useEffect(() => {
-
-    
-    const setupMedia = async () => {
+    const setupConnection = async () => {
       try {
         localStream.current = await navigator.mediaDevices.getUserMedia({
           audio: true,
-          video: false,
         });
 
         peerConnection.current = new RTCPeerConnection();
 
-        // Add local tracks to peer connection
         localStream.current.getTracks().forEach((track) => {
           peerConnection.current.addTrack(track, localStream.current);
         });
 
-        // Handle ICE candidates
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
             socket.emit("ice-candidate", {
-              to: receiverId,
+              toUserId: receiverId,
               candidate: event.candidate,
+              from: user._id,
             });
           }
         };
 
-        // Handle remote stream
         peerConnection.current.ontrack = (event) => {
           if (remoteAudioRef.current) {
             remoteAudioRef.current.srcObject = event.streams[0];
           }
         };
       } catch (err) {
-        console.error("Error accessing microphone:", err);
+        console.error("Error accessing mic:", err);
       }
     };
 
-    setupMedia();
+    setupConnection();
 
     return () => {
-      // cleanup listeners
-      socket.off("call-made");
       socket.off("answer-made");
       socket.off("ice-candidate");
-      if (peerConnection.current) {
-        peerConnection.current.close();
-      }
+      socket.off("end-call");
+
+      if (peerConnection.current) peerConnection.current.close();
       if (localStream.current) {
-        localStream.current.getTracks().forEach((track) => track.stop());
+        localStream.current.getTracks().forEach((t) => t.stop());
       }
     };
-  }, [receiverId]);
+  }, [receiverId, user._id]);
 
+  // Socket events
   useEffect(() => {
-    socket.on("call-made", async (data) => {
-      await peerConnection.current.setRemoteDescription(
-        new RTCSessionDescription(data.offer)
-      );
-      const answer = await peerConnection.current.createAnswer();
-      await peerConnection.current.setLocalDescription(answer);
-      socket.emit("make-answer", { to: data.from, answer });
-      setIsCalling(true);
-    });
-
     socket.on("answer-made", async (data) => {
       await peerConnection.current.setRemoteDescription(
         new RTCSessionDescription(data.answer)
       );
+
+      for (const candidate of pendingCandidates.current) {
+        await peerConnection.current.addIceCandidate(candidate);
+      }
+      pendingCandidates.current = [];
     });
 
     socket.on("ice-candidate", async (data) => {
-      try {
+      if (peerConnection.current?.remoteDescription) {
         await peerConnection.current.addIceCandidate(data.candidate);
-      } catch (e) {
-        console.error("Error adding received ice candidate", e);
+      } else {
+        pendingCandidates.current.push(data.candidate);
       }
+    });
+
+    socket.on("end-call", () => {
+      endCall();
     });
   }, []);
 
+  // Start Call
   const startCall = async () => {
     setIsCalling(true);
 
     const offer = await peerConnection.current.createOffer();
     await peerConnection.current.setLocalDescription(offer);
 
-    socket.emit("call-user", { to: receiverId, offer, from: currentUserId });
+    socket.emit("call-user", {
+      to: receiverId,
+      offer,
+      from: user._id,
+      type: "voice" // أو "video", 
+      ,
+      name: user.username
+
+    });
+  };
+  
+
+  // Accept Call
+  const acceptCall = async () => {
+    await peerConnection.current.setRemoteDescription(
+      new RTCSessionDescription(incomingCall.offer)
+    );
+
+    for (const candidate of pendingCandidates.current) {
+      await peerConnection.current.addIceCandidate(candidate);
+    }
+    pendingCandidates.current = [];
+
+    const answer = await peerConnection.current.createAnswer();
+    await peerConnection.current.setLocalDescription(answer);
+
+    socket.emit("make-answer", {
+      to: incomingCall.from,
+      answer,
+      from: user._id,
+    });
+
+    setIsCalling(true);
   };
 
-  const endCall = () => {
-    setIsCalling(false);
-    if (peerConnection.current) {
-      peerConnection.current.close();
-    }
-    if (localStream.current) {
-      localStream.current.getTracks().forEach((track) => track.stop());
-    }
+  const rejectCall = () => {
+    socket.emit("reject-call", { to: incomingCall.from });
     onClose();
   };
 
+// ✅ End Call
+const endCall = () => {
+  setIsCalling(false);
+
+  if (peerConnection.current) {
+    peerConnection.current.close();
+    peerConnection.current = null;
+  }
+  if (localStream.current) {
+    localStream.current.getTracks().forEach((track) => track.stop());
+    localStream.current = null;
+  }
+
+  // ابعتي للسيرفر إن الكول خلص
+  socket.emit("end-call", {
+    to: receiverId,
+    from: user._id,
+  });
+
+  onClose();
+};
+
+
   return (
     <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50 p-4">
-      <p className="text-white mb-4">🎧 Voice Call with {receiverId}</p>
+      {incomingCall && !isCalling && (
+        <IncomingCallModal
+          caller={{ name: incomingCall.name, _id: incomingCall.from, type : "voice"}}
+          onAccept={acceptCall}
+          onReject={rejectCall}
+        />
+      )}
+
+      <p className="text-white mb-4">🎧 Voice Call with {receiverName}</p>
       <audio ref={remoteAudioRef} autoPlay />
 
       <div className="mt-6 flex gap-4">

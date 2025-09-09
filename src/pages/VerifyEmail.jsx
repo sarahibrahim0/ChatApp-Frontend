@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { verifyEmail } from "../redux/apiCalls/authApiCalls";
-import { authActions } from "../redux/slices/AUTHsLICE.JS";
+import { authActions } from "../redux/slices/authSlice.js";
 import { Player } from "@lottiefiles/react-lottie-player";
 import verifiedAnimation from "../assets/verified.json"; // make sure the path is correct
 
@@ -15,7 +15,6 @@ const VerifyEmail = () => {
   const dispatch = useDispatch();
 
 useEffect(() => {
-    console.log("Sending verify request...");
 
   if (!isEmailVerified && !isVerifying) {
     dispatch(verifyEmail(userId, token));
@@ -23,7 +22,6 @@ useEffect(() => {
 }, [dispatch, userId, token, isEmailVerified, isVerifying]);
 
   useEffect(() => {
-        console.log(error)
 
     return () => {
       dispatch(authActions.clearError());
@@ -31,8 +29,8 @@ useEffect(() => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center min-h-screen  bg-gray-100 px-4">
-      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center">
+    <div className="flex justify-center items-center min-h-screen  bg-gray-100 px-4  dark:bg-licorice">
+      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center  dark:bg-licorice">
         {(isVerifying && !error) && (
           <p className="text-lg font-medium text-gray-600 animate-pulse">
             Verifying your email...

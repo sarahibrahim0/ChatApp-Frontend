@@ -35,7 +35,7 @@ const initialValues = {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-30 flex justify-center items-center z-50">
-  <div className="bg-white p-4 rounded-lg shadow-xl w-full max-w-md relative max-h-screen overflow-y-auto">
+  <div className="bg-white dark:text-white-smoke dark:bg-licorice p-4 rounded-lg shadow-xl w-full max-w-md relative max-h-screen overflow-y-auto">
     <button
       className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-xl font-bold"
       onClick={onClose}
@@ -43,7 +43,7 @@ const initialValues = {
       ×
     </button>
 
-    <h2 className="text-base font-semibold text-russian-violet mb-3 text-center">
+    <h2 className="text-base font-semibold text-russian-violet dark:text-white-smoke mb-3 text-center">
       Edit Profile
     </h2>
 
@@ -54,7 +54,7 @@ const initialValues = {
       onSubmit={(values) => onSubmit(values)}
     >
       {({ setFieldValue, values }) => (
-        <Form className="space-y-3 text-xs text-russian-violet font-medium">
+        <Form className="space-y-3 text-xs text-russian-violet dark:text-white-smoke font-medium">
 
           {/* User Image */}
           <div className="flex flex-col items-center mb-2">
@@ -69,37 +69,37 @@ const initialValues = {
                 className="w-full h-full object-cover"
               />
             </div>
-            <label className="mt-1 text-[10px] text-gray-500">User Photo</label>
+            <label className="mt-1 text-[10px] text-gray-500 dark:text-white-smoke">User Photo</label>
           </div>
 
           {/* Grid Fields */}
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="block mb-1">Name</label>
-              <Field name="name" className="w-full border border-royal-violet rounded px-2 py-1 outline-none" />
+              <Field name="name" className="w-full border  dark:bg-licorice border-royal-violet rounded px-2 py-1 outline-none" />
               <ErrorMessage name="name" component="div" className="text-red-500 text-[10px]" />
             </div>
 
             <div>
               <label className="block mb-1">Email</label>
-              <Field name="email" type="email" className="w-full border border-royal-violet rounded px-2 py-1 outline-none" />
+              <Field name="email" type="email" className="w-full  dark:bg-licorice border border-royal-violet rounded px-2 py-1 outline-none" />
               <ErrorMessage name="email" component="div" className="text-red-500 text-[10px]" />
             </div>
 
             <div>
               <label className="block mb-1">Password</label>
-              <Field name="password" type="password" className="w-full border border-royal-violet rounded px-2 py-1 outline-none" />
+              <Field name="password" type="password" className="w-full  dark:bg-licorice border border-royal-violet rounded px-2 py-1 outline-none" />
               <ErrorMessage name="password" component="div" className="text-red-500 text-[10px]" />
             </div>
 
             <div>
               <label className="block mb-1">Phone</label>
-              <Field name="phone" className="w-full border border-royal-violet rounded px-2 py-1 outline-none" />
+              <Field name="phone" className="w-full  dark:bg-licorice border border-royal-violet rounded px-2 py-1 outline-none" />
             </div>
 
             <div>
               <label className="block mb-1">Gender</label>
-              <Field as="select" name="gender" className="w-full border border-royal-violet rounded px-2 py-1 outline-none">
+              <Field as="select" name="gender" className="w-full  dark:bg-licorice border border-royal-violet rounded px-2 py-1 outline-none">
                 <option value="">Select</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -108,7 +108,7 @@ const initialValues = {
 
             <div>
               <label className="block mb-1">Birth Date</label>
-              <Field name="birthDate" type="date" className="w-full border border-royal-violet rounded px-2 py-1 outline-none" />
+              <Field name="birthDate" type="date" className="w-full  dark:bg-licorice border border-royal-violet rounded px-2 py-1 outline-none" />
             </div>
           </div>
 
@@ -119,7 +119,7 @@ const initialValues = {
               name="title"
               as="textarea"
               rows="2"
-              className="w-full border border-royal-violet rounded px-2 py-1 outline-none"
+              className="w-full border border-royal-violet rounded px-2 py-1 outline-none dark:bg-licorice"
             />
           </div>
 
@@ -138,7 +138,7 @@ const initialValues = {
           <div className="pt-2 text-center">
             <button
               type="submit"
-              className="bg-royal-purple hover:bg-russian-violet text-white px-3 py-1.5 rounded text-xs transition"
+              className="bg-royal-purple dark:text-white-smoke dark:bg-licorice hover:bg-russian-violet text-white px-3 py-1.5 rounded text-xs transition"
             >
               Save Changes
             </button>

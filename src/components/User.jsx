@@ -10,7 +10,6 @@ const User = ({currentUser , onClick}) => {
 
 
           const fetchUserChat = (userId)=>{
-        console.log(userId + '__' + user._id)
         dispatch(getSingleChat(user._id, userId));
         if(onClick) onClick();
     };

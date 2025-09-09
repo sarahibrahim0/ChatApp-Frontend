@@ -40,8 +40,8 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 dark:text-white-smoke dark:bg-licorice">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md dark:text-white-smoke dark:bg-licorice">
         <h2 className="text-2xl font-semibold text-center text-royal-purple mb-6">
           Create Your Account
         </h2>
@@ -114,7 +114,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={formik.isSubmitting}
-                className="w-full py-2 bg-royal-purple text-white font-medium rounded-md hover:bg-english-violet transition-all duration-200"
+                className="w-full py-2 bg-royal-purple  text-white font-medium rounded-md hover:bg-english-violet transition-all duration-200"
               >
                 {formik.isSubmitting ? "Registering..." : "Register"}
               </button>

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { setNewPassword } from "../redux/apiCalls/passwordApiCalls";
-import { authActions } from "../redux/slices/AUTHsLICE";
+import { authActions } from "../redux/slices/authSlice";
 
 const ResetPassword = () => {
   const dispatch = useDispatch();
@@ -35,8 +35,8 @@ const ResetPassword = () => {
   });
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white-smoke px-4">
-      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center">
+    <div className="flex justify-center items-center min-h-screen bg-white-smoke dark:text-white-smoke dark:bg-licorice px-4">
+      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center dark:text-white-smoke dark:bg-licorice">
         <h2 className="text-xl font-bold text-royal-purple mb-4">Reset Password</h2>
         <p className="text-gray-600 mb-6">Enter a new strong password</p>
 

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const AUTHsLICE = createSlice({
+const authSlice = createSlice({
     name: "auth",
     initialState: {
           user: localStorage.getItem("userInfo")
@@ -83,8 +83,8 @@ const AUTHsLICE = createSlice({
     }
 })
 
-const authReducer = AUTHsLICE.reducer;
-const authActions = AUTHsLICE.actions
+const authReducer = authSlice.reducer;
+const authActions = authSlice.actions
 
 
 export {authActions, authReducer};

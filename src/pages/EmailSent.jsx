@@ -8,8 +8,8 @@ const EmailSent = () => {
   const { resetedMsg  , errorPassword } = useSelector((state) => state.password);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:text-white-smoke dark:bg-licorice px-4">
+      <div className="bg-white dark:text-white-smoke dark:bg-licorice p-8 rounded-xl shadow-lg w-full max-w-md text-center">
         <Player
           autoplay
           loop
@@ -34,12 +34,12 @@ const EmailSent = () => {
            </span>
 }
 
-          <span className="font-semibold ml-1 text-blue-black">
+          <span className="font-semibold ml-1 text-blue-black dark:text-white-smoke ">
             {registerMessage? registerMessage : resetedMsg  }
             </span>
         </p>
 
-        <p className="text-xs text-gray-500 mb-6">
+        <p className="text-xs text-gray-500 dark:text-white-smoke  mb-6">
            {registerMessage && 
                 <span>
                     Please check your inbox and click the link to verify your account.

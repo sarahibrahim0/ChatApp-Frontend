@@ -1,121 +1,100 @@
-import { useDispatch, useSelector } from "react-redux";
-import { NavLink, Link , useLocation } from "react-router-dom";
-
+import { useSelector, useDispatch } from "react-redux";
+import { NavLink } from "react-router-dom";
 import { logoutUser } from "../redux/apiCalls/authApiCalls";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   UserIcon,
   Cog6ToothIcon,
-  ArrowLeftEndOnRectangleIcon,
   ArrowLeftStartOnRectangleIcon,
-  UserPlusIcon
+  ArrowLeftEndOnRectangleIcon,
+  UserPlusIcon,
 } from "@heroicons/react/24/solid";
+import ThemeToggle from "./ThemeToggle";
 import img from "../assets/default-profile.png";
+import SideBar from "./SideBar"; // ⭐ استوردي الكمبوننت الجديد
 
 const NavBar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const logOut = () => dispatch(logoutUser());
 
-  const logOut =  () => {
-    dispatch(logoutUser());
-  };
-  
-  const location = useLocation();
-  const isChatSelected =
-    location.pathname === "/" ||/^\/[^/]+$/.test(location.pathname) && // matches "/some-id"
-  !["/profile", "/settings", "/login", "/register"].includes(location.pathname);
   return (
-    <ul className="flex flex-col h-full text-sm w-16 text-center items-center bg-russian-violet">
+    <div className="relative h-full">
+      {/* Desktop NavBar */}
+      <ul className="hidden md:flex flex-col h-full w-16 text-center items-center bg-russian-violet dark:bg-licorice text-white">
+        {/* Profile */}
+        {user && (
+          <li className="p-3">
+            <img
+              src={user?.profilePhoto?.url || img}
+              alt={user?.username}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          </li>
+        )}
 
-      {/* صورة البروفايل */}
-      {user && (
+        {/* Chats */}
+        {user && (
+          <li className="p-3">
+            <NavLink to="/">
+              <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5 text-white hover:text-royal-purple" />
+            </NavLink>
+          </li>
+        )}
+
+        {/* Profile link */}
+        {user && (
+          <li className="p-3">
+            <NavLink to="/profile">
+              <UserIcon className="h-5 w-5 text-white hover:text-royal-purple" />
+            </NavLink>
+          </li>
+        )}
+
+        {/* Settings */}
+        {user && (
+          <li className="p-3">
+            <NavLink to="/settings">
+              <Cog6ToothIcon className="h-5 w-5 text-white hover:text-royal-purple" />
+            </NavLink>
+          </li>
+        )}
+
+        <div className="flex-1"></div>
+
+        {/* Theme Toggle */}
         <li className="p-3">
-          <img
-            src={user?.profilePhoto.url || img}
-            alt={user?.username}
-            className="w-10 h-10 object-cover rounded-full"
-          />
+          <ThemeToggle />
         </li>
-      )}
 
-      {/* رابط المحادثات */}
-      <li className="p-3">
-      <NavLink
-        to="/"
-        className={`rounded-full text-english-violet ${
-          isChatSelected
-            ? "bg-russian-violet text-white"
-            : "text-royal-violet hover:text-white-smoke"
-        }`}
-      >
-          <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
-        </NavLink>
-      </li>
-
-      {/* رابط البروفايل */}
-      <li className="p-3">
-        <NavLink
-          to="/profile"
-          className={({ isActive }) =>
-            isActive
-              ? "text-white-smoke"
-              : "text-english-violet hover:text-white-smoke"
-          }
-        >
-          <UserIcon className="h-5 w-5 cursor-pointer" />
-        </NavLink>
-      </li>
-
-      {/* رابط الإعدادات */}
-      <li className="p-3">
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            isActive
-              ? "text-white-smoke"
-              : "text-english-violet hover:text-white-smoke"
-          }
-        >
-          <Cog6ToothIcon className="h-5 w-5 cursor-pointer" />
-        </NavLink>
-      </li>
-
-      {/* تسجيل الخروج أو تسجيل الدخول/التسجيل */}
-      {user ? (
-        <li className="mt-auto p-3">
-          <Link onClick={logOut} className="">
-            <ArrowLeftStartOnRectangleIcon className="h-5 w-5 text-english-violet rotate-180 hover:text-white-smoke" />
-          </Link>
-        </li>
-      ) : (
-        <ul className="mt-auto flex flex-col space-y-3 p-3">
-          <li>
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-white-smoke"
-                  : "text-english-violet hover:text-white-smoke"
-              }
-            >
-              <ArrowLeftEndOnRectangleIcon className="h-5 w-5" />
-            </NavLink>
+        {/* Logout / Login & Register */}
+        {user ? (
+          <li className="p-3">
+            <button onClick={logOut}>
+              <ArrowLeftStartOnRectangleIcon className="h-5 w-5 text-white hover:text-royal-purple" />
+            </button>
           </li>
-          <li>
-            <NavLink
-              to="/register"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-white-smoke"
-                  : "text-english-violet hover:text-white-smoke"
-              }
-            >
-              <UserPlusIcon className="h-5 w-5" />
-            </NavLink>
-          </li>
-        </ul>
-      )}
-    </ul>
+        ) : (
+          <>
+            <li className="p-3">
+              <NavLink to="/login">
+                <ArrowLeftEndOnRectangleIcon className="h-5 w-5 text-white hover:text-royal-purple" />
+              </NavLink>
+            </li>
+            <li className="p-3">
+              <NavLink to="/register">
+                <UserPlusIcon className="h-5 w-5 text-white hover:text-royal-purple" />
+              </NavLink>
+            </li>
+          </>
+        )}
+      </ul>
+
+      {/* Mobile Sidebar */}
+<div className="md:hidden absolute top-4 left-4 z-50">
+        <SideBar />
+      </div>
+    </div>
   );
 };
 

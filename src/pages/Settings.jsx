@@ -30,17 +30,17 @@ dispatch(deactivateUser(user._id));
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white  dark:bg-licorice">
       {/* Header */}
-      <header className="border-b border-gray-200 px-6 py-5 bg-gray-50">
+      <header className="border-b border-gray-200 px-6 py-5 bg-gray-50 dark:text-white-smoke dark:bg-licorice">
         <h1 className="text-2xl font-semibold text-royal-violet tracking-tight">Settings</h1>
         <p className="text-sm text-gray-500">Manage your account options</p>
       </header>
 
       {/* Content */}
-      <main className="flex-1 p-6 space-y-6 bg-white">
+      <main className="flex-1 p-6 space-y-6 bg-white dark:text-white-smoke dark:bg-licorice">
         {/* Deactivate Account */}
-        <section className="p-5 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300">
+        <section className="p-5 bg-gray-50 border border-gray-200 dark:text-white-smoke dark:bg-licorice rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               <PowerIcon className="h-6 w-6 text-english-violet mt-1" />
@@ -53,7 +53,7 @@ dispatch(deactivateUser(user._id));
             </div>
             <button
               onClick={handleDeactivate}
-              className="text-sm text-white bg-royal-purple hover:bg-russian-violet px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
+              className="text-sm text-white bg-royal-purple  hover:bg-russian-violet px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
             >
               Deactivate
             </button>
@@ -61,7 +61,7 @@ dispatch(deactivateUser(user._id));
         </section>
 
         {/* Delete Account */}
-        <section className="p-5 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300">
+        <section className="p-5 bg-gray-50 border dark:text-white-smoke dark:bg-licorice border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               <ExclamationTriangleIcon className="h-6 w-6 text-red-600 mt-1" />

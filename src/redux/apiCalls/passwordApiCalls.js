@@ -1,5 +1,5 @@
 import request from "../../utils/request";
-import { authActions } from "../slices/AUTHsLICE.JS";
+import { authActions } from "../slices/authSlice.js";
 import { passwordActions } from "../slices/passwordSlice";
 
  export function forgotPassword(userEmail) {

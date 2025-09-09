@@ -54,22 +54,22 @@ const ReceiverProfile = () => {
   const hasMedia = images.length > 0 || files.length > 0 || voiceAndVideos.length > 0;
 
   return (
-    <aside className="w-80 bg-white border-l border-gray-200 p-6 flex flex-col gap-6 text-xs">
+    <aside className="w-80 bg-white  dark:bg-licorice  p-6 flex flex-col gap-6 text-xs border-0">
       {/* Profile Section */}
       <div className="flex flex-col items-center gap-1">
-        <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300">
+        <div className="w-24 h-24 rounded-full overflow-hidden border  border-gray-300">
           <img
             src={receiverProfile?.profilePhoto?.url || img}
             alt={receiverProfile?.name}
             className="w-full h-full object-cover"
           />
         </div>
-        <h3 className="text-base font-semibold text-gray-900">{receiverProfile?.name}</h3>
-        <p className="text-xs text-gray-500">{receiverProfile?.title || "Not provided"}</p>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white-smoke dark:bg-licorice">{receiverProfile?.name}</h3>
+        <p className="text-xs text-gray-500 dark:text-white-smoke dark:bg-licorice">{receiverProfile?.title || "Not provided"}</p>
       </div>
 
       {/* Info Section */}
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <InfoItem label="Mobile" value={receiverProfile?.phone} Icon={PhoneIcon} />
         <InfoItem label="Email" value={receiverProfile?.isDeleted?"Not provided": receiverProfile?.email} Icon={EnvelopeIcon} />
         <InfoItem
@@ -86,7 +86,7 @@ const ReceiverProfile = () => {
 
       {/* Shared Media */}
       <div>
-        <h3 className="text-xs font-semibold text-gray-900 mb-2">Shared Media</h3>
+        <h3 className="text-xs font-semibold text-gray-900 dark:text-white-smoke dark:bg-licorice mb-2">Shared Media</h3>
 
         {!hasMedia && <p className="text-xxs text-gray-400">No media</p>}
 
@@ -183,7 +183,7 @@ const InfoItem = ({ label, value, Icon }) => (
     <Icon className="w-5 h-5 text-royal-purple mt-0.5" />
     <div className="flex-1">
       <p className="text-xxs text-gray-400">{label}</p>
-      <p className="text-xs font-medium text-gray-800 break-words">{value || "Not provided"}</p>
+      <p className="text-xs font-medium text-gray-800 dark:text-white-smoke dark:bg-licorice break-words">{value || "Not provided"}</p>
     </div>
   </div>
 );

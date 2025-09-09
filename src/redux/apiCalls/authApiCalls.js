@@ -1,6 +1,6 @@
 import { data } from "autoprefixer";
 import request from "../../utils/request";
-import { authActions } from "../slices/AUTHsLICE.JS";
+import { authActions } from "../slices/authSlice.js";
 //login user
 //Must return anonymous function
 
