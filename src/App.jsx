@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import socket from "./utils/socket";
-
 import NavBar from "./components/NavBar";
 import Chats from "./pages/Chats";
 import Login from "./pages/Login";
@@ -17,6 +16,7 @@ import Settings from "./pages/Settings";
 import DeactivationPage from "./pages/DeactivationPage";
 import VoiceCall from "./components/VoiceCall";
 import VideoCall from "./components/VideoCall";
+import ReceiverProfile from "./pages/ReceiverProfile";
 
 function App() {
   const { user, token, registerMessage } = useSelector((state) => state.auth);
@@ -59,7 +59,7 @@ useEffect(() => {
       </div>
       <div className="flex-1 overflow-y-auto">
         <Routes>
-          <Route path="/" element={token && user ? <Chats /> : <Login />} />
+          <Route path="/" element={token && user ? <Chats /> : <Login />} /> 
           <Route
             path="/:receiverId"
             element={token ? <Chats /> : <Login />}
@@ -84,6 +84,10 @@ useEffect(() => {
           <Route
             path="/profile"
             element={token ? <UserProfile /> : <Login />}
+          />
+                    <Route
+            path="/receiver/:id"
+            element={token ? <ReceiverProfile /> : <Login />}
           />
           <Route
             path="/settings"

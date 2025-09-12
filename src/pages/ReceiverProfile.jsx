@@ -54,8 +54,14 @@ const ReceiverProfile = () => {
   const hasMedia = images.length > 0 || files.length > 0 || voiceAndVideos.length > 0;
 
   return (
-    <aside className="w-80 bg-white  dark:bg-licorice  p-6 flex flex-col gap-6 text-xs border-0">
-      {/* Profile Section */}
+    <aside 
+  className="
+    w-full 
+    bg-white dark:bg-licorice  
+    p-6 flex flex-col gap-6 text-xs border-0 
+    h-full overflow-y-auto
+  "
+>      {/* Profile Section */}
       <div className="flex flex-col items-center gap-1">
         <div className="w-24 h-24 rounded-full overflow-hidden border  border-gray-300">
           <img

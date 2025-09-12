@@ -27,8 +27,10 @@ const VoiceCall = ({ receiverId, receiverName, incomingCall, onClose }) => {
 
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
+            console.log("📞 ICE sending to:", receiverId, "from:", user._id);
+
             socket.emit("ice-candidate", {
-              toUserId: receiverId,
+              to: receiverId,
               candidate: event.candidate,
               from: user._id,
             });
@@ -156,7 +158,7 @@ const endCall = () => {
 
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/80 flex flex-col items-center text-sm justify-center z-50 p-4">
       {incomingCall && !isCalling && (
         <IncomingCallModal
           caller={{ name: incomingCall.name, _id: incomingCall.from, type : "voice"}}

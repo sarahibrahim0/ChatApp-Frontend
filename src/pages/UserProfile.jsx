@@ -37,12 +37,12 @@ const UserProfile = () => {
     <div className="flex flex-col items-center min-h-screen bg-white  dark:bg-licorice px-4 sm:px-6 py-10">
       {/* Header */}
       <div className="flex items-center justify-between w-full max-w-3xl mb-8">
-        <h1 className="text-xl sm:text-2xl font-semibold text-royal-purple">Your Profile</h1>
+        <h1 className="text-sm sm:text-2xl font-semibold text-royal-purple">Your Profile</h1>
         <button
           onClick={handleEditClick}
           className="flex items-center gap-1 text-sm text-english-violet hover:text-royal-purple"
         >
-          <PencilSquareIcon className="w-5 h-5" />
+          <PencilSquareIcon className="w-4 h-4" />
           Edit
         </button>
       </div>
@@ -58,7 +58,7 @@ const UserProfile = () => {
             className="w-24 h-24 rounded-full object-cover border-2 border-royal-purple"
           />
           <div className="text-center sm:text-left">
-            <h2 className="text-lg font-medium text-royal-purple">{user
+            <h2 className="text-sm sm:text-lg font-medium text-royal-purple">{user
           ?.username
           }</h2>
             <p className="text-sm text-gray-500 dark:text-white-smoke dark:bg-licorice">{user

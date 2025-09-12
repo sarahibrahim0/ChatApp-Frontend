@@ -3,9 +3,9 @@ import socket from "../utils/socket";
 import { useSelector } from "react-redux";
 import IncomingCallModal from "./IncomingCallModal";
 
-const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
+const VideoCall = ({ receiverId, receiverName, incomingCall, onClose }) => {
   const [isCalling, setIsCalling] = useState(false);
-  const [ready, setReady] = useState(false); // indicates peerConnection ready
+  const [ready, setReady] = useState(false);
 
   const peerConnection = useRef(null);
   const localStream = useRef(null);
@@ -14,11 +14,10 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
   const pendingCandidates = useRef([]);
   const { user } = useSelector((state) => state.auth);
 
-  // Setup media and peer connection
+  // setup media + peer connection
   useEffect(() => {
     const setup = async () => {
       try {
-        // Get local media
         localStream.current = await navigator.mediaDevices.getUserMedia({
           audio: true,
           video: true,
@@ -28,33 +27,31 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
           localVideoRef.current.srcObject = localStream.current;
         }
 
-        // Create peer connection
         peerConnection.current = new RTCPeerConnection();
 
-        // Add local tracks
         localStream.current.getTracks().forEach((track) =>
           peerConnection.current.addTrack(track, localStream.current)
         );
 
-        // ICE candidates
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
+            console.log("📞 ICE sending to:", receiverId, "from:", user._id);
+
             socket.emit("ice-candidate", {
-              toUserId: receiverId,
+              to: receiverId,
               candidate: event.candidate,
               from: user._id,
             });
           }
         };
 
-        // Remote video
         peerConnection.current.ontrack = (event) => {
           if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = event.streams[0];
           }
         };
 
-        setReady(true); // peerConnection جاهز
+        setReady(true);
       } catch (err) {
         console.error("Error accessing camera/mic:", err);
       }
@@ -74,9 +71,8 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
     };
   }, [receiverId, user._id]);
 
-  // Socket listeners
+  // socket listeners
   useEffect(() => {
- 
     socket.on("answer-made", async ({ answer }) => {
       if (!peerConnection.current) return;
 
@@ -84,7 +80,6 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
         new RTCSessionDescription(answer)
       );
 
-      // Apply pending ICE candidates
       pendingCandidates.current.forEach(async (candidate) => {
         try {
           await peerConnection.current.addIceCandidate(candidate);
@@ -96,6 +91,7 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
     });
 
     socket.on("ice-candidate", async ({ candidate }) => {
+      console.log(candidate + 'candid')
       try {
         if (peerConnection.current?.remoteDescription) {
           await peerConnection.current.addIceCandidate(candidate);
@@ -124,9 +120,8 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
       to: receiverId,
       offer,
       from: user._id,
-        type:"video",
-        name: user.username
-
+      type: "video",
+      name: user.username,
     });
   };
 
@@ -175,53 +170,57 @@ const VideoCall = ({ receiverId, receiverName , incomingCall, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50 p-4">
-{incomingCall && (
-  <IncomingCallModal
-    caller={{ name: incomingCall.name, _id: incomingCall.from , type : "video" }}
-    onAccept={acceptCall}
-    onReject={rejectCall}
-  />
-)}
-
-
-      <p className="text-white mb-4">📹 Video Call with {receiverName}</p>
-
-      <div className="flex gap-4">
-        <video
-          ref={localVideoRef}
-          autoPlay
-          playsInline
-          muted
-          className="w-48 h-36 bg-gray-900 rounded-lg"
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      {incomingCall && (
+        <IncomingCallModal
+          caller={{ name: incomingCall.name, _id: incomingCall.from, type: "video" }}
+          onAccept={acceptCall}
+          onReject={rejectCall}
         />
-        <video
-          ref={remoteVideoRef}
-          autoPlay
-          playsInline
-          className="w-96 h-72 bg-gray-900 rounded-lg"
-        />
-      </div>
+      )}
 
-      <div className="mt-6 flex gap-4">
-        {!isCalling ? (
-          <button
-            onClick={startCall}
-            disabled={!ready}
-            className={`px-4 py-2 rounded-lg ${
-              ready ? "bg-green-500 text-white" : "bg-gray-500 text-gray-300"
-            }`}
-          >
-            🎥 Start Video Call
-          </button>
-        ) : (
-          <button
-            onClick={endCall}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg"
-          >
-            ❌ End Call
-          </button>
-        )}
+      {/* Call Box */}
+      <div className="rounded-xl shadow-xl p-4 w-72 sm:w-96 flex flex-col items-center text-sm">
+        <p className="text-white mb-2 text-sm text-center">📹 {receiverName}</p>
+
+        {/* Videos */}
+        <div className="flex flex-col gap-2 items-center justify-center w-full">
+          <video
+            ref={localVideoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-24 h-20 sm:w-32 sm:h-24 bg-black rounded-md"
+          />
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="w-40 h-32 sm:w-64 sm:h-48 bg-black rounded-md"
+          />
+        </div>
+
+        {/* Controls */}
+        <div className="mt-3 flex gap-2">
+          {!isCalling ? (
+            <button
+              onClick={startCall}
+              disabled={!ready}
+              className={`px-3 py-1 rounded-lg text-xs sm:text-sm ${
+                ready ? "bg-green-500 text-white" : "bg-gray-500 text-gray-300"
+              }`}
+            >
+              🎥 Start
+            </button>
+          ) : (
+            <button
+              onClick={endCall}
+              className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs sm:text-sm"
+            >
+              ❌ End
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

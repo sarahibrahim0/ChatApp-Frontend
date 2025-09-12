@@ -3,3 +3,31 @@ body {
   @apply font-sans;
 }
 
+/* Firefox */
+html {
+  scrollbar-width: thin; 
+  scrollbar-color: #6F46A2ff transparent;
+}
+
+.dark html {
+  scrollbar-color: #1a1a1a transparent; /* licorice في دارك مود */
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 5px;  /* العرض */
+  height: 2px; /* لو في سكرول أفقي */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* الخلفية */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6F46A2ff;
+  border-radius: 6px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #1a1a1a; /* licorice */
+}

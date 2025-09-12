@@ -9,8 +9,6 @@ import {
   ArrowLeftStartOnRectangleIcon,
   ArrowLeftEndOnRectangleIcon,
   UserPlusIcon,
-  Bars3Icon,
-  XMarkIcon,
 } from "@heroicons/react/24/solid";
 import ThemeToggle from "./ThemeToggle";
 import img from "../assets/default-profile.png";
@@ -24,12 +22,14 @@ const SideBar = () => {
 
   return (
     <>
-      {/* زر الفتح - يظهر بس في الموبايل */}
+      {/* زر الفتح - زرار بارز من الطرف */}
       <button
         onClick={() => setOpen(true)}
-        className="md:hidden p-3 text-white bg-russian-violet dark:bg-licorice"
+        className="md:hidden fixed top-1/2 left-0 -translate-y-1/2 
+          bg-royal-purple dark:bg-white-smoke text-white
+          w-1.5 h-12 flex items-center justify-center
+          rounded-r-full shadow z-50 border-2 border-royal-purple dark:border-white-smoke"
       >
-        <Bars3Icon className="h-6 w-6" />
       </button>
 
       {/* Overlay لما المنيو مفتوحة */}
@@ -42,25 +42,18 @@ const SideBar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-russian-violet dark:bg-licorice text-white transform ${
+        className={`fixed top-0 left-0 h-full w-20 bg-russian-violet dark:bg-licorice text-white transform ${
           open ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 z-50 md:hidden`}
       >
-        <div className="flex justify-between items-center p-4">
-          <h2 className="text-lg font-semibold">Menu</h2>
-          <button onClick={() => setOpen(false)}>
-            <XMarkIcon className="h-6 w-6" />
-          </button>
-        </div>
-
-        <ul className="flex flex-col space-y-4 p-4">
+        <ul className="flex flex-col items-center h-full py-7">
           {/* Profile */}
           {user && (
-            <li>
+            <li className="mb-4">
               <img
                 src={user?.profilePhoto?.url || img}
                 alt={user?.username}
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover"
               />
             </li>
           )}
@@ -68,26 +61,29 @@ const SideBar = () => {
           {/* Links */}
           {user && (
             <>
-              <li>
+              <li className="mb-4">
                 <NavLink to="/" onClick={() => setOpen(false)}>
-                  <ChatBubbleOvalLeftEllipsisIcon className="h-6 w-6 hover:text-royal-purple" />
+                  <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5 hover:text-royal-purple" />
                 </NavLink>
               </li>
-              <li>
+              <li className="mb-4">
                 <NavLink to="/profile" onClick={() => setOpen(false)}>
-                  <UserIcon className="h-6 w-6 hover:text-royal-purple" />
+                  <UserIcon className="h-5 w-5 hover:text-royal-purple" />
                 </NavLink>
               </li>
-              <li>
+              <li className="mb-4">
                 <NavLink to="/settings" onClick={() => setOpen(false)}>
-                  <Cog6ToothIcon className="h-6 w-6 hover:text-royal-purple" />
+                  <Cog6ToothIcon className="h-5 w-5 hover:text-royal-purple" />
                 </NavLink>
               </li>
             </>
           )}
 
+          {/* Spacer عشان يدفع باقي الآيكونات تحت */}
+          <div className="flex-1"></div>
+
           {/* Theme Toggle */}
-          <li>
+          <li className="mb-4">
             <ThemeToggle />
           </li>
 
@@ -95,19 +91,19 @@ const SideBar = () => {
           {user ? (
             <li>
               <button onClick={logOut}>
-                <ArrowLeftStartOnRectangleIcon className="h-6 w-6 hover:text-royal-purple" />
+                <ArrowLeftStartOnRectangleIcon className="h-5 w-5 hover:text-royal-purple" />
               </button>
             </li>
           ) : (
             <>
-              <li>
+              <li className="mb-4">
                 <NavLink to="/login" onClick={() => setOpen(false)}>
-                  <ArrowLeftEndOnRectangleIcon className="h-6 w-6 hover:text-royal-purple" />
+                  <ArrowLeftEndOnRectangleIcon className="h-5 w-5 hover:text-royal-purple" />
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/register" onClick={() => setOpen(false)}>
-                  <UserPlusIcon className="h-6 w-6 hover:text-royal-purple" />
+                  <UserPlusIcon className="h-5 w-5 hover:text-royal-purple" />
                 </NavLink>
               </li>
             </>

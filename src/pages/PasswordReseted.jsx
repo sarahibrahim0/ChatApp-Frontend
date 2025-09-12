@@ -18,8 +18,12 @@ const PasswordReseted = () => {
   }, [dispatch]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white-smoke px-4">
-      <div className="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center">
+    <div className="flex justify-center items-center min-h-screen bg-white-smoke 
+    dark:bg-licorice
+    px-4">
+      <div className="bg-white
+      dark:bg-licorice
+       shadow-xl rounded-xl p-8 max-w-md w-full text-center">
         {reseted && (
           <>
             <Player

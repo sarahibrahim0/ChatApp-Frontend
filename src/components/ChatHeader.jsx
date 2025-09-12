@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { UserPlusIcon, PhoneIcon, VideoCameraIcon } from "@heroicons/react/24/solid";
 import VideoCall from "./VideoCall";
 import VoiceCall from "./VoiceCall";
+import { Link } from 'react-router-dom';
 
 const ChatHeader = ({ receiver }) => {
   const [isVoiceCallOpen, setIsVoiceCallOpen] = useState(false);
@@ -21,20 +22,38 @@ const ChatHeader = ({ receiver }) => {
         className="w-10 h-10 rounded-full object-cover"
       />
 
-      <div className="min-w-0">
+      <Link   className="block lg:hidden min-w-0"
+ to={`/receiver/${receiver?._id}`}>
         <h2 className={`${theme === "dark" ? "text-white" : "text-gray-900"} text-sm font-semibold truncate`}>
           {receiver?.name}{" "}
           {receiver?.isDeleted && (
             <span className="text-red-500 text-xs ml-2">(Deleted)</span>
           )}
         </h2>
-      </div>
+      </Link>
+
+      <h2
+  className={`hidden lg:block ${theme === "dark" ? "text-white" : "text-gray-900"} 
+  text-sm font-semibold truncate`}
+>
+  {receiver?.name}{" "}
+  {receiver?.isDeleted && (
+    <span className="text-red-500 text-xs ml-2">(Deleted)</span>
+  )}
+</h2>
 
       <ul className="flex flex-row space-x-5 ml-auto">
-        <li title="Add user">
-          <UserPlusIcon className={`h-4 w-4 cursor-pointer ${
-              theme === "dark" ? "text-white-smoke hover:text-royal-purple" : "text-white-smoke hover:text-english-violet"
-          }`} />
+        <li title={disabled ? "User not available" : "Add user"}>
+            <button
+            type="button"
+            disabled={disabled}
+            onClick={() => setIsVoiceCallOpen(true)}
+            className={`${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"} p-0 m-0`}
+          >
+          <UserPlusIcon className={`h-4 w-4 ${
+              theme === "dark" ? "text-white-smoke hover:text-royal-purple" : "text-royal-purple hover:text-english-violet"
+            }`} />
+            </button>
         </li>
 
         <li title={disabled ? "User not available" : "Voice call"}>
@@ -45,7 +64,7 @@ const ChatHeader = ({ receiver }) => {
             className={`${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"} p-0 m-0`}
           >
             <PhoneIcon className={`h-4 w-4 ${
-              theme === "dark" ? "text-white-smoke hover:text-royal-purple" : "text-white-smoke hover:text-english-violet"
+              theme === "dark" ? "text-white-smoke hover:text-royal-purple" : "text-royal-purple hover:text-english-violet"
             }`} />
           </button>
         </li>
@@ -58,7 +77,7 @@ const ChatHeader = ({ receiver }) => {
             className={`${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"} p-0 m-0`}
           >
             <VideoCameraIcon className={`h-4 w-4 ${
-              theme === "dark" ? "text-white-smoke hover:text-royal-purple" : "text-white-smoke hover:text-english-violet"
+              theme === "dark" ? "text-white-smoke hover:text-royal-purple" : "text-royal-purple hover:text-english-violet"
             }`} />
           </button>
         </li>
@@ -66,8 +85,8 @@ const ChatHeader = ({ receiver }) => {
 
       {isVoiceCallOpen && !disabled && (
         <VoiceCall
-          receiverId={receiver._id}
-          receiverName={receiver.name}
+          receiverId={receiver?._id}
+          receiverName={receiver?.name}
           onClose={() => setIsVoiceCallOpen(false)}
         />
       )}
@@ -75,7 +94,7 @@ const ChatHeader = ({ receiver }) => {
       {isVideoCallOpen && !disabled && (
         <VideoCall
           receiverId={receiver._id}
-          receiverName={receiver.name}
+          receiverName={receiver?.name}
           onClose={() => setIsVideoCallOpen(false)}
         />
       )}

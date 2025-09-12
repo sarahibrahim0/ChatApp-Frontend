@@ -26,7 +26,7 @@ const DeactivationPage = () => {
   dispatch(activateUser(userId ,email , password));
    }
    return (<>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-licorice px-4">
       <div className="bg-white dark:text-white-smoke dark:bg-licorice p-8 rounded-xl shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-semibold text-center text-royal-purple mb-6">
           Account Deactivated
@@ -39,7 +39,7 @@ const DeactivationPage = () => {
         <button
           onClick={handleReactivate}
           disabled={loading}
-          className="w-full py-2 bg-royal-purple dark:text-white-smoke dark:bg-licorice text-white font-medium rounded-md hover:bg-english-violet transition-all duration-200"
+          className="w-full py-2 bg-royal-purple dark:text-white-smoke  text-white font-medium rounded-md hover:bg-english-violet transition-all duration-200"
         >
           {loading ? "Reactivating..." : "Reactivate Account"}
         </button>
