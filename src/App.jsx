@@ -17,6 +17,7 @@ import DeactivationPage from "./pages/DeactivationPage";
 import VoiceCall from "./components/VoiceCall";
 import VideoCall from "./components/VideoCall";
 import ReceiverProfile from "./pages/ReceiverProfile";
+import GlobalErrorToast from "./components/GlobalErrorToast";
 
 function App() {
   const { user, token, registerMessage } = useSelector((state) => state.auth);
@@ -54,6 +55,7 @@ useEffect(() => {
 
   return (
     <div className="flex flex-row h-screen">
+      <GlobalErrorToast/>
       <div>
      <NavBar />
       </div>

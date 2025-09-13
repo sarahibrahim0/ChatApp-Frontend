@@ -4,6 +4,7 @@ import { passwordReducer } from "./slices/passwordSlice";
 import { chatReducer } from "./slices/chatSlice";
 import { usersReducer } from "./slices/usersSlice";
 import { themeReducer } from "./slices/themeSlice";
+import globalErrorReducer from "./slices/globalErrorSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,10 @@ const store = configureStore({
     password: passwordReducer,
     chat: chatReducer,
     users: usersReducer,
-    theme: themeReducer
+    theme: themeReducer,
+    globalError: globalErrorReducer,  // ✅ هنا ضفتي slice الأخطاء
+
+
   },
 });
 

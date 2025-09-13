@@ -278,7 +278,7 @@ const ChatDialogue = ({ onEdit }) => {
                 );
               })
             ) : (
-              <p className="text-gray-400 text-center mt-10">No messages</p>
+              <p className="text-gray-400 text-center mt-10 text-sm">No messages</p>
             )}
             <div ref={messagesEndRef} />
           </div>
@@ -319,7 +319,7 @@ const ChatDialogue = ({ onEdit }) => {
 
           {/* ✍️ Input */}
           {receiverProfile?.isDeleted ? (
-            <div className="text-center text-red-500 py-2">You can't send messages to this user</div>
+            <div className="text-center text-red-500 py-2 text-sm">You can't send messages to this user</div>
           ) : (
             <div className="border-t border-gray-200 bg-white dark:bg-licorice relative mt-2 flex items-center gap-2 px-3 py-2">
               <label className="cursor-pointer p-1">
